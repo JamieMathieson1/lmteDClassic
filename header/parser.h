@@ -3,4 +3,4 @@
 class parser {
  private:
  public:
-}
+};
