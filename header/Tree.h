@@ -8,6 +8,11 @@ struct Node;
 /// Give the unique pointer an alias cuz I'm lazy.
 using NodePtr = unique_ptr<Node>;
 
+// one row per precedence level, loosest first
+static const vector<vector<string>> LEVELS = {
+    {"|"},      {"^"},           {"&"}, {"==", "!="}, {"<", "<=", ">", ">="},
+    {"+", "-"}, {"*", "\\", "%"}};
+
 enum class NodeKind {
   // expressions
   LITERAL,
@@ -39,8 +44,8 @@ struct Ident {
   string type;
   string name;
   string full;
+  string length;  // arrays only, e.g. "[3]" or "[2][3]"
 
-  // Splits a token that the tokenizer already validated.
   static Ident decode(const string& text) {
     Ident id;
     id.full = text;
@@ -49,8 +54,15 @@ struct Ident {
       id.name = text.substr(2);
     } else if (id.kind == 'A') {
       size_t sep = text.rfind('_');
-      id.type = text.substr(0, sep);
       id.name = text.substr(sep + 1);
+      string t = text.substr(2, sep - 2);  // "int[3]" or "int"
+      size_t br = t.find('[');
+      if (br == string::npos) {
+        id.type = t;
+      } else {
+        id.type = t.substr(0, br);
+        id.length = t.substr(br);
+      }
     } else {  // V_type_name, F_type_name
       size_t sep = text.find('_', 2);
       id.type = text.substr(2, sep - 2);
@@ -65,28 +77,13 @@ struct Node {
   NodeKind kind;
   int line = 0;
   int col = 0;
-  virtual void print();
   // Each subclass implements this by calling g.visit(*this).
-  virtual string callVisit(CppGenerator& g) const;
+  virtual string callVisit(CppGenerator& g) const = 0;
   Node(NodeKind k, int line = 0, int col = 0) : kind(k), line(line), col(col) {}
   Node(NodeKind k, const Token& t)
       : kind(k), line(t.getLine()), col(t.getCharNum()) {}
-  virtual ~Node() = default;
 };
 
-// The container that holds the other nodes.
-class Tree {
- private:
-  NodePtr root;
-
- public:
-  Tree(NodePtr r) : root(move(r)) {}
-  void print() {
-    if (root) root->print();
-  }
-
-  Node* getRoot() const { return root.get(); }
-};
 
 // Template return the node of type.
 template <class T>
@@ -193,6 +190,7 @@ struct ExprStmtNode : Node {
   static constexpr NodeKind KIND = NodeKind::EXPR_STMT;
   NodePtr expr;
   ExprStmtNode(const Token& t) : Node(KIND, t) {}
+  ExprStmtNode() : Node(KIND) {}
   string callVisit(CppGenerator& g) const override;
 };
 

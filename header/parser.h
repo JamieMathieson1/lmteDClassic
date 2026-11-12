@@ -19,11 +19,13 @@ class parseError : public runtime_error {
                       to_string(col) + ": " + msg) {}
 };
 using namespace std;
+
+
 class parser {
  private:
   // vars.
   std::vector<Token> tokens;
-  size_t position;
+  size_t position = 0;
   vector<unordered_set<string>> scopes;
   bool suppressDecl = false;
   // Finders and ifno getters.
@@ -31,7 +33,6 @@ class parser {
 
   bool isDone();
   // checker
-  Token& cur();
   Token& futureVision(size_t ahead);
   bool is(TokenType type, string& text);
   Token& expect(TokenType type, string text);
@@ -43,20 +44,16 @@ class parser {
   NodePtr parseFunction();
   NodePtr parseClass();
   NodePtr parseStatement();
-  NodePtr parseBlock();
   NodePtr parseIf();
-  NodePtr parseFor();
-  NodePtr parseReturn();
-  // Functions foor functions fff.
-  bool isFunction();
+
   // scopes
   void pushScope() { scopes.emplace_back(); }
   void popScope() { scopes.pop_back(); }
   bool declare(const string& fullName);
   size_t matchingBracket(size_t open);
   // parsers.
-  NodePtr parseBlock(bool done);
-  NodePtr parseDoWhile();
+   NodePtr parseBlock(bool newScope = true);
+    NodePtr parseDoWhile();
   NodePtr parseReturn();
   NodePtr parseWhile();
   NodePtr parseFor();
@@ -67,9 +64,7 @@ class parser {
   NodePtr parseUnary();
   NodePtr parsePostfix();
   NodePtr parsePrimary();
-  NodePtr parseCall();
   NodePtr parsePower();
-  NodePtr parseOp();
   NodePtr parseCallOrName();
   vector<NodePtr> parseArgs();
   bool isFunctionDef();

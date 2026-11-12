@@ -1,7 +1,10 @@
 #pragma once
 #include <string>
+#include <memory>
 using namespace std;
 struct Node;
+using NodePtr = unique_ptr<Node>;
+enum class NodeKind;
 struct programNode; struct FunctionNode; struct ClassNode;
 struct BlockNode; struct ExprStmtNode; struct ReturnNode;
 struct IfNode; struct ForNode; struct WhileNode; struct DoWhileNode;
@@ -13,8 +16,13 @@ class CppGenerator {
     // Generate C++ code from the abstract syntax tree returned by the optimizer
     private:
         string code;
+        int level = 0;
+        string wrap(const NodeKind& kind, const string& printed, int tightestP, int currLevel);
+        int tightestP = -1;
 
     public:
+        string& getCode() {return code;} 
+
         // top level
         string visit(const programNode& n);
         string visit(const FunctionNode& n);
@@ -43,6 +51,8 @@ class CppGenerator {
         // takes in the AST's program node (top node)
         CppGenerator() {};
 
-        void generate(programNode& p);
+        string indent() const { return string(level * 4, ' '); }
+
+        void generate(const programNode& p);
 
 };

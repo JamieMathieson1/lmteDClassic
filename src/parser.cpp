@@ -60,18 +60,6 @@ size_t parser::matchingBracket(size_t open) {
                    tokens[open].getCharNum());
 }
 
-bool parser::isFunction() {
-  if (isDone() || tokens[position].getType() != TokenType::IDENTIFIER)
-    return false;
-  if (tokens[position].getContent()[0] != 'F') return false;
-  if (position + 1 >= tokens.size() || tokens[position + 1].getContent() != "[")
-    return false;
-  size_t close = matchingBracket(position + 1);
-  return close + 1 < tokens.size() &&
-         tokens[close + 1].getType() == TokenType::PUNCTUATOR &&
-         tokens[close + 1].getContent() == "d";
-}
-
 // Yoinks the node and pushes.
 NodePtr parser::parse() {
   auto prog = make_unique<programNode>();
@@ -274,7 +262,9 @@ NodePtr parser::parseReturn() {
 //   postfix: [index]   ;member
 // ===========================================================================
 
-NodePtr parser::parseExpr() { return parseAssign(); }
+NodePtr parser::parseExpr() { 
+  return parseAssign();
+ }
 
 static bool isAssignOp(const string& s) {
   return s == "=" || s == "+=" || s == "-=" || s == "*=" || s == "**=" ||
@@ -293,11 +283,6 @@ NodePtr parser::parseAssign() {
   }
   return lhs;
 }
-
-// one row per precedence level, loosest first
-static const vector<vector<string>> LEVELS = {
-    {"|"},      {"^"},           {"&"}, {"==", "!="}, {"<", "<=", ">", ">="},
-    {"+", "-"}, {"*", "\\", "%"}};
 
 NodePtr parser::parseBinary(int level) {
   if (level >= (int)LEVELS.size()) return parseUnary();
@@ -461,4 +446,36 @@ NodePtr parser::parsePrimary() {
   }
 
   fail("expected an expression");
+  return nullptr;  // fail() always throws, this just silences the warning
 }
+
+bool parser::isK(string keyWord) {
+  return !isDone() && tokens[position].getType() == TokenType::KEYWORD &&
+         tokens[position].getContent() == keyWord;
+}
+
+bool parser::isP(string punctuation) {
+  return !isDone() && tokens[position].getType() == TokenType::PUNCTUATOR &&
+         tokens[position].getContent() == punctuation;
+}
+
+bool parser::isOp(string op) {
+  return !isDone() && tokens[position].getType() == TokenType::OPERATOR &&
+         tokens[position].getContent() == op;
+}
+
+// Same check as isFunction(): F_... [ ... ] d
+// F_... [ ... ] d
+bool parser::isFunctionDef() {
+  if (isDone() || tokens[position].getType() != TokenType::IDENTIFIER)
+    return false;
+  if (tokens[position].getContent()[0] != 'F') return false;
+  if (position + 1 >= tokens.size() || tokens[position + 1].getContent() != "[")
+    return false;
+  size_t close = matchingBracket(position + 1);
+  return close + 1 < tokens.size() &&
+         tokens[close + 1].getType() == TokenType::PUNCTUATOR &&
+         tokens[close + 1].getContent() == "d";
+}
+
+parser::~parser() {}
