@@ -1,0 +1,21 @@
+F_int_top[void]d
+
+    V_int_result = (5 + 3) * 2/
+    V_int_division = 100 \ (2 + 3)/
+    V_int_arithmetic = 7 * 6 - 8/
+
+    V_int_sum = 0/
+
+    condition[V_int_i = 0, V_int_i < 3, V_int_i = V_int_i + 1]d
+        V_int_sum = V_int_sum + V_int_i/
+    b
+
+    if[5 > 3]d
+        V_int_result = V_int_result + 4/
+    b
+
+    V_int_unused = 12345/
+
+    return V_int_result + V_int_division + V_int_arithmetic + V_int_sum/
+
+b
