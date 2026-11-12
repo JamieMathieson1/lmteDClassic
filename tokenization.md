@@ -47,6 +47,14 @@ condition[init, test, step] d ... b
 
 Strings are wrapped in `{ }`, can contain spaces, and can't nest.
 
+## Comments
+
+`FAH` starts a single-line comment; all characters through the next newline
+are ignored. `FFAH` starts a multiline comment, which ends at the next `HAFF`.
+Multiline comments may contain newlines, and an unclosed multiline comment is
+invalid. Comments are discarded before parsing and do not appear in generated
+C++.
+
 ## How it works
 One pass over the characters, building `content` until the token ends, then `finalizeToken` trims it, classifies it (checks in the table's order, `OPERATOR` first), and stores it.
 

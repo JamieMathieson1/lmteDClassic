@@ -134,8 +134,41 @@ void Tokenizer::build(string& code) {
   // anything until a '}'.
   int len(code.size());
   string content;
+  bool lineComment = false;
+  bool blockComment = false;
 
   for (int i = 0; i < len; i++) {
+    if (lineComment) {
+      if (code[i] == '\n' || code[i] == '\r') {
+        lineComment = false;
+        line++;
+        lineStart = i + 1;
+      }
+      continue;
+    }
+
+    if (blockComment) {
+      if (code.compare(i, 4, "HAFF") == 0) {
+        blockComment = false;
+        i += 3;
+      } else if (code[i] == '\n' || code[i] == '\r') {
+        line++;
+        lineStart = i + 1;
+      }
+      continue;
+    }
+
+    if (content.empty() && code.compare(i, 4, "FFAH") == 0) {
+      blockComment = true;
+      i += 3;
+      continue;
+    }
+    if (content.empty() && code.compare(i, 3, "FAH") == 0) {
+      lineComment = true;
+      i += 2;
+      continue;
+    }
+
     // inside string
     if (strM) {
       content.push_back(code[i]);
@@ -196,5 +229,7 @@ void Tokenizer::build(string& code) {
       }
     }
   }
+  if (blockComment)
+    throw invalid_argument("Unterminated multiline comment");
   finalizeToken(content, len);
 }

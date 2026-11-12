@@ -70,9 +70,9 @@ class parser {
   bool isFunctionDef();
   bool isK(string keyWord);
   bool isP(string punctuation);
-  ~parser();
 
  public:
   parser(Tokenizer& tokens);
+  ~parser();
   NodePtr parse();
 };
