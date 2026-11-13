@@ -1,4 +1,4 @@
-# include "SemanticAnalyser.h"
+#include "../header/SemanticAnalyser.h"
 # include <iostream>
 
 SemanticAnalyser::SemanticAnalyser() {
