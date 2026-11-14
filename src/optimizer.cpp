@@ -716,7 +716,7 @@ NodePtr cloneNode(const Node* source) {
             auto* old = as<ExprStmtNode>(source);
 
             auto n = make_unique<ExprStmtNode>();
-
+            
             n->line = old->line;
             n->col = old->col;
             n->expr = cloneNode(old->expr.get());
@@ -802,6 +802,8 @@ NodePtr cloneNode(const Node* source) {
             auto n = make_unique<FunctionNode>(token);
 
             n->id = old->id;
+            n->isVirtual = old->isVirtual;
+            n->isAbstract = old->isAbstract;
 
             for (const auto& param : old->params)
                 n->params.push_back(cloneNode(param.get()));

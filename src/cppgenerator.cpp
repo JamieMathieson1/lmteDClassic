@@ -23,7 +23,9 @@ string CppGenerator::visit(const programNode& p) {
 // top level
 
 string CppGenerator::visit(const FunctionNode& n) {
-  string header = indent() + n.id.type + " " + n.id.name + '(';
+  string header = indent();
+  if (n.isVirtual || n.isAbstract) header += "virtual ";
+  header += n.id.type + " " + n.id.name + '(';
   for (const NodePtr& args : n.params) {
     header.append(args.get()->callVisit(*this) + ", ");
   }
@@ -32,6 +34,7 @@ string CppGenerator::visit(const FunctionNode& n) {
     header.pop_back();
   }  // remove extra ,
   header.push_back(')');
+  if (n.isAbstract) return header + " = 0;\n";
   string body = n.body.get()->callVisit(*this);
   return header + body;
 }

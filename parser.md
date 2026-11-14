@@ -82,6 +82,12 @@ FunctionNode (F_int_add)
         └── BinaryNode +
             ├── NameNode V_int_a
             └── NameNode V_int_b
+
+Inside a class, `lowkey` before a function marks it virtual:
+`lowkey F_void_run[void] d ... b`. `highkey` marks an abstract function and
+uses a signature-only form: `highkey F_void_run[void]/`, generated as
+`virtual void run() = 0;`. These modifiers are class-member-only and cannot be
+combined.
 ```
 
 The function node holds its decoded name (`id`), its `params`, and its `body` (a `BlockNode` of statements).

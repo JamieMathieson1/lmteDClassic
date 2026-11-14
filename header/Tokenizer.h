@@ -21,7 +21,9 @@ const unordered_set<string> KEYWORDS = {
     // control flow
     "if", "elseif", "catch", "condition", "tested", "testing", "return",
     // OOP / memory
-    "worships", "beg", "donate"};
+    "worships", "beg", "donate",
+    // function modifiers
+    "lowkey", "highkey"};
 
 const unordered_set<string> TYPES = {"int",    "bool",  "char",
                                      "string", "float", "void"};

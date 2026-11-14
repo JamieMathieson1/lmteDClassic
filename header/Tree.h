@@ -243,6 +243,8 @@ struct FunctionNode : Node {
   Ident id;
   vector<NodePtr> params;
   NodePtr body;
+  bool isVirtual = false;
+  bool isAbstract = false;
   FunctionNode(const Token& t) : Node(KIND, t) {}
   string callVisit(CppGenerator& g) const override;
 };

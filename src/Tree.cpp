@@ -140,7 +140,8 @@ inline void dumpTree(const Node* n, ostream& o = cout, int depth = 0) {
     }
     case NodeKind::FUNCTION: {
       auto* x = as<FunctionNode>(n);
-      line("Function " + x->id.full);
+      string modifier = x->isAbstract ? "highkey " : (x->isVirtual ? "lowkey " : "");
+      line(modifier + "Function " + x->id.full);
       for (auto& p : x->params) dumpTree(p.get(), o, depth + 1);
       dumpTree(x->body.get(), o, depth + 1);
       break;
