@@ -1,0 +1,6 @@
+FAH Tests: bare member declarations, class-typed variable, setters/getters,
+FAH zero-argument calls, member calls as printf arguments.
+
+F_int_main[void] d
+  return 0/
+b

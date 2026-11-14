@@ -1,0 +1,6 @@
+
+F_int_main[void] d
+  V_string_r = beg {abcdefg}/
+  F_void_print[{%s}, V_string_r]/
+  return 0/
+b

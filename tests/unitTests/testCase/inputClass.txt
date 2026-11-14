@@ -1,0 +1,22 @@
+FAH Tests: bare member declarations, class-typed variable, setters/getters,
+FAH zero-argument calls, member calls as printf arguments.
+C_Dog d
+  V_int_age/
+  V_int_weight/
+
+  F_void_setage[V_int_newage] d
+    V_int_age = V_int_newage/
+  b
+
+  F_int_getage[void] d
+    return V_int_age/
+  b
+
+  F_void_setweight[V_int_newweight] d
+    V_int_weight = V_int_newweight/
+  b
+
+  F_int_getweight[void] d
+    return V_int_weight/
+  b
+b
