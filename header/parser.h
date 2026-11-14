@@ -41,7 +41,7 @@ class parser {
 
   // The tree.
   NodePtr parseItem();
-  NodePtr parseFunction();
+  NodePtr parseFunction(bool isVirtual = false, bool isAbstract = false);
   NodePtr parseClass();
   NodePtr parseStatement();
   NodePtr parseIf();

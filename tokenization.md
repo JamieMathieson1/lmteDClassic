@@ -29,6 +29,12 @@ C_Dog d                            class: body in d ... b
   V_int_age/
 b
 
+lowkey F_int_bark[void] d          virtual class member function
+  return 0/
+b
+
+highkey F_void_feed[V_int_x]/       abstract class member function
+
 V_int_x = 10/                      variable; '/' ends a statement
 A_int[3]_nums = (1, 2, 3)/         array literal in ( )
 V_int_s = F_int_add[V_int_x, 4]/   call: args in [ ]
@@ -40,7 +46,7 @@ condition[init, test, step] d ... b
 | Type | Matches |
 |---|---|
 | `OPERATOR` | `+ - * ** \ %`, `< <= == > >= !=`, `= += -= *= **= \= %=`, `& \| ^ &= \|= ^= !` |
-| `KEYWORD` | `if elseif catch condition tested testing return worships beg donate`, plus the type names |
+| `KEYWORD` | `if elseif catch condition tested testing return worships beg donate lowkey highkey`, plus the type names |
 | `PUNCTUATOR` | `[ ] ( ) , ; / d b` (`d`/`b` only when they stand alone) |
 | `LITERAL` | numbers (digits, at most one `.`), `True`/`False`, strings `{...}` |
 | `IDENTIFIER` | the name forms above |

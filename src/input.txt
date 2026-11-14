@@ -1,0 +1,42 @@
+FAH Tests: bare member declarations, class-typed variable, setters/getters,
+FAH zero-argument calls, member calls as printf arguments.
+C_Dog d
+  V_int_age/
+  V_int_weight/
+
+  F_void_setage[V_int_newage] d
+    V_int_age = V_int_newage/
+  b
+
+  F_int_getage[void] d
+    return V_int_age/
+  b
+
+  F_void_setweight[V_int_newweight] d
+    V_int_weight = V_int_newweight/
+  b
+
+  F_int_getweight[void] d
+    return V_int_weight/
+  b
+b
+
+F_int_main[void] d
+  V_Dog_rex/
+  V_Dog_fido/
+
+  V_Dog_rex ; F_void_setage[3]/
+  V_Dog_rex ; F_void_setweight[20]/
+  V_Dog_fido ; F_void_setage[9]/
+  V_Dog_fido ; F_void_setweight[35]/
+
+  F_void_printf[{rex:  age %d weight %d\n}, V_Dog_rex ; F_int_getage[], V_Dog_rex ; F_int_getweight[]]/
+  F_void_printf[{fido: age %d weight %d\n}, V_Dog_fido ; F_int_getage[], V_Dog_fido ; F_int_getweight[]]/
+
+  FAH updating rex must not change fido
+  V_Dog_rex ; F_void_setage[4]/
+  F_void_printf[{rex:  age %d\n}, V_Dog_rex ; F_int_getage[]]/
+  F_void_printf[{fido: age %d\n}, V_Dog_fido ; F_int_getage[]]/
+
+  return 0/
+b
