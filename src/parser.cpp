@@ -257,7 +257,7 @@ NodePtr parser::parseReturn() {
 // expressions. Precedence, loosest -> tightest:
 //   = += -= *= **= \= %= &= |= ^=     (right assoc)
 //   |   ^   &   (== !=)   (< <= > >=)   (+ -)   (* \ %)
-//   prefix: ! - beg donate
+//   prefix: ! + - beg donate
 //   **                                 (right assoc;  -a ** b  ==  -(a ** b))
 //   postfix: [index]   ;member
 // ===========================================================================
@@ -304,7 +304,9 @@ NodePtr parser::parseBinary(int level) {
 
 NodePtr parser::parseUnary() {
   bool prefixOp = !isDone() && cur().getType() == TokenType::OPERATOR &&
-                  (cur().getContent() == "!" || cur().getContent() == "-");
+                  (cur().getContent() == "!" ||
+                   cur().getContent() == "+" ||
+                   cur().getContent() == "-");
   if (prefixOp || isK("beg") || isK("donate")) {
     auto node = make_unique<UnaryNode>(cur());
     position++;

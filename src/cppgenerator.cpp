@@ -154,7 +154,8 @@ string CppGenerator::visit(const CallNode& n) {
     }
     res.append(")");
     return res;
- }
+}
+
 string CppGenerator::visit(const IndexNode& n) { 
     return n.base.get()->callVisit(*this) + '[' + n.index.get()->callVisit(*this) + ']';
 }
