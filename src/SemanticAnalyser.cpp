@@ -1,10 +1,13 @@
 #include "../header/SemanticAnalyser.h"
 # include <iostream>
 
+// Creates an initial scope when initialised 
 SemanticAnalyser::SemanticAnalyser() {
     enterScope();
 }
 
+// enterScope and exitScope are used for scope management and are called
+// when the analyser enters and exits new blocks of code that use a seperate scope (such as fuctions) 
 void SemanticAnalyser::enterScope() {
     scope_list.emplace_back();
 }
@@ -15,6 +18,7 @@ void SemanticAnalyser::exitScope() {
     }
 }
 
+// This function adds a new variable to the current scope if it doesn't already exist
 bool SemanticAnalyser::declare(const Symbol& symbol) {
     if (scope_list.empty()) {
         enterScope();
@@ -27,6 +31,8 @@ bool SemanticAnalyser::declare(const Symbol& symbol) {
     return true;
 }
 
+// This function searches for a variable starting from the innermost scope, and continues outwards.
+// Returns a pointer to the variable's symbol if found, otherwise it returns nullptr.
 Symbol* SemanticAnalyser::lookup(const string& name) {
     for (auto it = scope_list.rbegin(); it != scope_list.rend(); ++it) {
         auto found = it->find(name);
@@ -37,9 +43,11 @@ Symbol* SemanticAnalyser::lookup(const string& name) {
     return nullptr;
 }
 
+// This records the semantic errors in the error list using the line and column information from the AST node.
 void SemanticAnalyser::error(const Node* node, const string& message) {
     errors.push_back("Semantic error has occured at " + to_string(node->line) + ":" + to_string(node->col) + ": " + message);
 }
+
 
 bool SemanticAnalyser::hasErrors() const {
     return !errors.empty();
