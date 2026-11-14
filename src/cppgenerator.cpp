@@ -44,9 +44,12 @@ string CppGenerator::visit(const ClassNode& n) {
   cls.append(" {\n");
   // implicit block here
   level++;
+  cls.append(indent() + "public: \n");
+  level++;
   for (const NodePtr& mem : n.members) {
     cls.append(mem.get()->callVisit(*this));
   }
+  level--;
   level--;
   cls.append(indent() + "};\n");
   return cls;
