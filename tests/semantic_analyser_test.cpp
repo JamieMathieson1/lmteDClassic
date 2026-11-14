@@ -1,32 +1,75 @@
-# include <iostream>
-# include <string>
-# include <memory>
-# include <stdexcept>
+#include <fstream>
+#include <iostream>
+#include <memory>
+#include <sstream>
+#include <stdexcept>
+#include <string>
 
-# include "../header/Tokenizer.h"
-# include "../header/parser.h"
-# include "../header/CppGenerator.h"
-# include "../header/SemanticAnalyser.h"
-# include "../header/Tree.h"
+#include "../header/CppGenerator.h"
+#include "../header/SemanticAnalyser.h"
+#include "../header/Tokenizer.h"
+#include "../header/Tree.h"
+#include "../header/parser.h"
 
 int main() {
-    string source = R"( F_int_main[] d V_int_x = 5/ V_int_y = 10/ V_int_result = V_int_x + V_int_y/ return V_int_result/ b )";
+  // Read source code from input.txt
+  std::ifstream inputFile("src/input.txt");
+  if (!inputFile.is_open()) {
+    std::cerr << "Error: Could not open input.txt\n";
+    return 1;
+  }
 
+  std::stringstream buffer;
+  buffer << inputFile.rdbuf();
+  std::string source = buffer.str();
+  inputFile.close();
+
+  std::cout << "--- INPUT SOURCE CODE ---\n" << source << "\n\n";
+
+  try {
     Tokenizer tokenizer(source);
     parser p(tokenizer);
     NodePtr ast = p.parse();
+
     auto* program = as<programNode>(ast.get());
     if (!program) {
-        throw runtime_error("Invalid program AST");
+      std::cerr << "Error: Invalid program AST\n";
+      return 1;
     }
+
+    // 1. Run Semantic Analysis
     SemanticAnalyser semantic;
     if (!semantic.analyse(*program)) {
-        for (const string& err : semantic.getErrors()) {
-            cout << err << '\n';
-        }
-        return 1;
+      std::cout << "--- SEMANTIC ERRORS ---\n";
+      for (const std::string& err : semantic.getErrors()) {
+        std::cout << err << '\n';
+      }
+      return 1;
     }
+    std::cout << "Semantic analysis passed successfully!\n\n";
+
+    // 2. Run Code Generation
     CppGenerator generator;
+    generator.scope_list =
+        &semantic.getScopeList();  // Link scope list for isHeap checks
     generator.generate(*program);
-    std::cout << generator.getCode();
+
+    // 3. Write generated code to output.cpp
+    std::ofstream outputFile("output.cpp");
+    if (!outputFile.is_open()) {
+      std::cerr << "Error: Could not open output.cpp for writing\n";
+      return 1;
+    }
+    outputFile << "#include <bits/stdc++.h> \n";
+    outputFile << generator.getCode();
+    outputFile.close();
+
+    std::cout << "Generated C++ code written to output.cpp\n";
+
+  } catch (const std::exception& e) {
+    std::cerr << "Exception caught during compilation: " << e.what() << '\n';
+    return 1;
+  }
+
+  return 0;
 }

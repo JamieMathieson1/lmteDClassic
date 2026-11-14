@@ -71,6 +71,8 @@ NodePtr parser::parse() {
 
 // Helps parse class.
 NodePtr parser::parseItem() {
+  if (isK("lowkey") || isK("highkey"))
+    fail("function modifiers are only valid on class member functions");
   if (cur().getType() == TokenType::IDENTIFIER) {
     if (isFunctionDef()) return parseFunction();
     // C_Name d ...   or   C_Name worships ...
@@ -85,9 +87,11 @@ NodePtr parser::parseItem() {
 }
 
 // Helps to parsethe function arguments.
-NodePtr parser::parseFunction() {
+NodePtr parser::parseFunction(bool isVirtual, bool isAbstract) {
   auto fn = make_unique<FunctionNode>(cur());
   fn->id = Ident::decode(cur().getContent());
+  fn->isVirtual = isVirtual;
+  fn->isAbstract = isAbstract;
   position++;
   expect(TokenType::PUNCTUATOR, "[");
 
@@ -114,7 +118,11 @@ NodePtr parser::parseFunction() {
     }
   }
   expect(TokenType::PUNCTUATOR, "]");
-  fn->body = parseBlock(false);  // same scope as the parameters
+  if (isAbstract) {
+    expect(TokenType::PUNCTUATOR, "/");
+  } else {
+    fn->body = parseBlock(false);  // same scope as the parameters
+  }
   popScope();
   return fn;
 }
@@ -143,7 +151,19 @@ NodePtr parser::parseClass() {
   pushScope();  // members get their own scope
   while (!isP("b")) {
     if (isDone()) fail("unterminated class, expected 'b'");
-    cls->members.push_back(parseItem());
+    if (isK("lowkey") || isK("highkey")) {
+      bool isVirtual = isK("lowkey");
+      position++;
+      if (isK("lowkey") || isK("highkey"))
+        fail("function modifiers cannot be combined");
+      if (isDone() || cur().getType() != TokenType::IDENTIFIER ||
+          cur().getContent()[0] != 'F')
+        fail("expected a function after '" +
+             string(isVirtual ? "lowkey" : "highkey") + "'");
+      cls->members.push_back(parseFunction(isVirtual, !isVirtual));
+    } else {
+      cls->members.push_back(parseItem());
+    }
   }
   popScope();
   expect(TokenType::PUNCTUATOR, "b");
