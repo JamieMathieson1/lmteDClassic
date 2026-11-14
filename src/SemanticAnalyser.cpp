@@ -1,4 +1,4 @@
-#include "../header/SemanticAnalyser.h"
+# include "../header/SemanticAnalyser.h"
 # include <iostream>
 
 // Creates an initial scope when initialised 
@@ -48,15 +48,17 @@ void SemanticAnalyser::error(const Node* node, const string& message) {
     errors.push_back("Semantic error has occured at " + to_string(node->line) + ":" + to_string(node->col) + ": " + message);
 }
 
-
+// This checks whether the error vector has any errors within it
 bool SemanticAnalyser::hasErrors() const {
     return !errors.empty();
 }
 
+// This returns the vector containing the semantic errors.
 const vector<string>& SemanticAnalyser::getErrors() const {
     return errors;
 }
 
+// This function converts type names that are strings into their SemanticType enum values
 SemanticType SemanticAnalyser::getType(const string& type) {
     if (type == "int") return SemanticType::INT;
     if (type == "float") return SemanticType::FLOAT;
@@ -67,7 +69,11 @@ SemanticType SemanticAnalyser::getType(const string& type) {
     return SemanticType::UNKNOWN;
 }
 
+// This function examines an expression node and determines its SemanticType
+// It then checks whether the expression follows the type rules
+// It returns a SemanticType representing the resulting type of the expression
 SemanticType SemanticAnalyser::checkExpression(const Node* node) {
+    // Check that the AST node exists
     if (!node) {
         return SemanticType::VOID;
     }
@@ -88,6 +94,8 @@ SemanticType SemanticAnalyser::checkExpression(const Node* node) {
             return SemanticType::ERROR;
         }
         // For the case of a variable node, check if the variable is declared
+        // If the variable does not exist, return unknown type and error
+        // If it does, we return the semantic type of the variable
         case NodeKind::NAME: {
             auto* n = as<NameNode>(node);
             Symbol* symbol = lookup(n->id.full);
@@ -97,7 +105,7 @@ SemanticType SemanticAnalyser::checkExpression(const Node* node) {
             }
             return symbol->type;
         }
-        // For the case of a binary node
+        // For the case of a binary node, call the helper checkBinary with the lhs and rhs of the expression
         case NodeKind::BINARY: {
             auto* n = as<BinaryNode>(node);
             SemanticType lhs = checkExpression(n->lhs.get());
@@ -112,6 +120,7 @@ SemanticType SemanticAnalyser::checkExpression(const Node* node) {
             if (operand == SemanticType::ERROR){
                 return SemanticType::ERROR;
             }
+            // Checks for the "logical NOT operator and return a bool value if the operand is bool"
             if (n->op == "!") {
                 if (operand == SemanticType::BOOL) {
                     return SemanticType::BOOL;
@@ -119,6 +128,8 @@ SemanticType SemanticAnalyser::checkExpression(const Node* node) {
                 error(node, "'!' requires a boolean operand");
                 return SemanticType::ERROR;
             }
+            // Check for the unary minus, which is for negative values.
+            // Is only allowed for INT and FLOAT operand types
             if (n->op == "-") {
                 if (operand == SemanticType::INT || operand == SemanticType::FLOAT) {
                     return operand;
@@ -133,12 +144,14 @@ SemanticType SemanticAnalyser::checkExpression(const Node* node) {
             }
             return SemanticType::UNKNOWN;
         }
-        // Assignment Node Case, call checkAssignment helper function
+        // Assignment logic cases will be handled in the checkAssignment helper function
         case NodeKind::ASSIGN: {
             auto* n = as<AssignNode>(node);
             return checkAssignment(n);
         }
-        // Function Call Node Case
+        // The analyser checks if the call if for a function or a class with the callee.kind value
+        // It then returns the respective type for the function or the class type
+        // The analyser then loops through the arguments supplied to the function call
         case NodeKind::CALL: {
             auto* n = as<CallNode>(node);
             SemanticType result;
@@ -161,7 +174,9 @@ SemanticType SemanticAnalyser::checkExpression(const Node* node) {
                 return result;
             }
         }
-        // Array Literal Nodes Case
+        // If its an array literal case, first we need to check if its empty. If it is, we return array semantic type
+        // Next we need to check the first element type, as that is the expecting type for all other elements in the array
+        // If any other element in the array is not the expected type we return an error otherwise we return array type
         case NodeKind::ARRAY_LITERAL: {
             auto* n = as<ArrayLiteralNode>(node);
             if (n->elems.empty()) {
@@ -178,7 +193,7 @@ SemanticType SemanticAnalyser::checkExpression(const Node* node) {
                     return SemanticType::ERROR;
                 }
             }
-            return SemanticType::ERROR;
+            return SemanticType::ARRAY;
         }
         // Array Index Nodes Case
         case NodeKind::INDEX: {
@@ -216,6 +231,7 @@ SemanticType SemanticAnalyser::checkExpression(const Node* node) {
     }
 }
 
+// This function checks the binary cases
 SemanticType SemanticAnalyser::checkBinary(const string& op, SemanticType lhs, SemanticType rhs, const Node* node) {
     if (lhs == SemanticType::ERROR || rhs == SemanticType::ERROR) {
         return SemanticType::ERROR;
@@ -481,6 +497,8 @@ void SemanticAnalyser::checkNode(const Node* node) {
     }
 }
 
+// To do the full analysis, clear the vectors and variables and then run checkNode
+// on program and return the errors if there are any.
 bool SemanticAnalyser::analyse(const programNode& program) {
     errors.clear();
     scope_list.clear();
