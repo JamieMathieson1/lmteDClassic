@@ -1,15 +1,13 @@
- F_int_main[] d
-            V_int_x = beg 10/
-            V_int_y = beg 20/
-            V_int_sum = V_int_x + V_int_y/
+C_Rectangle d
+    V_int_width/
+    V_int_height/
+b
 
-            if [V_int_sum > 25] d
-                donate V_int_x/
-            b
-            catch d
-                donate V_int_y/
-            b
-
-            F_void_printf[{sum: %d}, V_int_sum]/
-            return 0/
-        b
+F_int_main[] d
+    V_Rectangle_r/
+    V_Rectangle_r;V_int_width = 10/
+    V_Rectangle_r;V_int_height = 20/
+    V_int_area = V_Rectangle_r;V_int_width * V_Rectangle_r;V_int_height/
+    F_int_printf[{%d}, V_int_area]/
+    return 0/
+b

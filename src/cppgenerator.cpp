@@ -196,9 +196,9 @@ const Symbol* CppGenerator::lookupSymbol(const string& name) {
 
 string CppGenerator::visit(const MemberNode& n) {
   string objectStr = n.object.get()->callVisit(*this);
+  string memberStr = n.member.get()->callVisit(*this);
 
   bool isHeapVar = false;
-
   if (n.object->kind == NodeKind::NAME) {
     auto* nameNode = as<NameNode>(n.object.get());
     const Symbol* sym = lookupSymbol(nameNode->id.full);
@@ -206,12 +206,9 @@ string CppGenerator::visit(const MemberNode& n) {
       isHeapVar = true;
     }
   }
-  bool isSharedPtrExpr = (objectStr.find("std::shared_ptr") != string::npos ||
-                          objectStr.rfind("new ", 0) == 0 ||
-                          objectStr.find("make_shared") != string::npos);
 
-  string accessor = (isHeapVar || isSharedPtrExpr) ? "->" : ".";
-  return objectStr + accessor + n.member.get()->callVisit(*this);
+  string accessor = isHeapVar ? "->" : ".";
+  return objectStr + accessor + memberStr;
 }
 
 bool CppGenerator::isHeapName(const NameNode& n) {

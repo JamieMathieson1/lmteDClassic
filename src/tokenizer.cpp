@@ -8,7 +8,12 @@
 #include <unordered_set>
 
 #include "../header/Utils.h"
-
+bool Tokenizer::isValidType(const string& t) {
+  if (TYPES.count(t)) return true;
+  // class type: starts with an uppercase letter, alphanumeric only
+  return !t.empty() && isupper(static_cast<unsigned char>(t[0])) &&
+         all_of(t.begin(), t.end(), ::isalnum);
+}
 bool Tokenizer::isValidLiteral(string& content) {
   if (content.empty()) return false;
   // either a string:
@@ -51,7 +56,7 @@ bool Tokenizer::arrayIdentifier(string& arr) {
 
   // element type sits between "A_" and "[size]"
   string elem = arr.substr(2, left - 2);
-  if (TYPES.count(elem)) return true;
+  if (isValidType(elem)) return true;
   return arrayIdentifier(elem);
 }
 
@@ -66,7 +71,7 @@ bool Tokenizer::isValidIdentifier(string& content) {
     string part;
     iss.ignore(content.size(), '_');
     getline(iss, part, '_');
-    if (!TYPES.count(part)) return false;
+    if (!isValidType(part)) return false;
     getline(iss, part, '\0');
 
     return isValidName(part);
@@ -229,7 +234,6 @@ void Tokenizer::build(string& code) {
       }
     }
   }
-  if (blockComment)
-    throw invalid_argument("Unterminated multiline comment");
+  if (blockComment) throw invalid_argument("Unterminated multiline comment");
   finalizeToken(content, len);
 }
