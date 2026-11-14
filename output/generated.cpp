@@ -1,0 +1,19 @@
+int top() {
+    int result = 16;
+    int division = 20;
+    int arithmetic = 34;
+    int sum = 0;
+ {
+        int i = 0;
+        sum = sum + i;
+        i = i + 1;
+        sum = sum + i;
+        i = i + 1;
+        sum = sum + i;
+        i = i + 1;
+    }
+ {
+        result = result + 4;
+    }
+    return result + division + arithmetic + sum;
+}
