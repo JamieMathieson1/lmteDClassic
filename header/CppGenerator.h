@@ -37,6 +37,9 @@ class CppGenerator {
   int tightestP = -1;
 
  public:
+  string pendingType;
+  unordered_set<string> heapVars;
+  bool isHeapName(const NameNode& n);
   const vector<unordered_map<string, Symbol>>* scope_list = nullptr;
   string& getCode() { return code; }
   // top level

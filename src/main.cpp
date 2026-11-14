@@ -1,5 +1,7 @@
+#include <fstream>
 #include <iostream>
 #include <memory>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -10,15 +12,17 @@
 #include "../header/parser.h"
 
 int main() {
-  // Class-free source code testing heap allocation ('beg') and deallocation
-  // ('donate')
-  std::string source = R"(
-        F_int_main[] d
-            V_int_ptr = beg 5/
-            donate V_int_ptr/
-            return 0/
-        b
-    )";
+  // Read source code from input.txt
+  std::ifstream inputFile("src/input.txt");
+  if (!inputFile.is_open()) {
+    std::cerr << "Error: Could not open input.txt\n";
+    return 1;
+  }
+
+  std::stringstream buffer;
+  buffer << inputFile.rdbuf();
+  std::string source = buffer.str();
+  inputFile.close();
 
   std::cout << "--- INPUT SOURCE CODE ---\n" << source << "\n\n";
 
@@ -50,8 +54,17 @@ int main() {
         &semantic.getScopeList();  // Link scope list for isHeap checks
     generator.generate(*program);
 
-    std::cout << "--- GENERATED C++ CODE ---\n";
-    std::cout << generator.getCode() << "\n";
+    // 3. Write generated code to output.cpp
+    std::ofstream outputFile("output.cpp");
+    if (!outputFile.is_open()) {
+      std::cerr << "Error: Could not open output.cpp for writing\n";
+      return 1;
+    }
+    outputFile << "#include <bits/stdc++.h> \n";
+    outputFile << generator.getCode();
+    outputFile.close();
+
+    std::cout << "Generated C++ code written to output.cpp\n";
 
   } catch (const std::exception& e) {
     std::cerr << "Exception caught during compilation: " << e.what() << '\n';

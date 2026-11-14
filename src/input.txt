@@ -1,0 +1,14 @@
+ F_int_main[] d
+            V_int_x = beg 10/
+            V_int_y = beg 20/
+            V_int_sum = V_int_x + V_int_y/
+
+            if [V_int_sum > 25] d
+                donate V_int_x/
+            b
+            catch d
+                donate V_int_y/
+            b
+
+            return V_int_sum/
+        b

@@ -1,4 +1,3 @@
-// test_codegen.cpp
 #include <bits/stdc++.h>
 #include "../../header/Tree.h"
 #include "../../header/CppGenerator.h"

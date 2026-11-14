@@ -107,8 +107,19 @@ string CppGenerator::visit(const DoWhileNode& n) {
 
 // expressions
 string CppGenerator::visit(const AssignNode& n) {
-  return n.target.get()->callVisit(*this) + " " + n.op + " " +
-         n.value.get()->callVisit(*this);
+  string saved = pendingType;
+  if (n.target->kind == NodeKind::NAME && n.value->kind == NodeKind::UNARY) {
+    auto* name = as<NameNode>(n.target.get());
+    auto* un = as<UnaryNode>(n.value.get());
+    if (name->isDecl && un->op == "beg") {
+      heapVars.insert(name->id.full);
+      pendingType = name->id.type;
+    }
+  }
+  string targetStr = n.target.get()->callVisit(*this);
+  string valueStr = n.value.get()->callVisit(*this);
+  pendingType = saved;
+  return targetStr + " " + n.op + " " + valueStr;
 }
 
 int findLevel(const string& op) {
@@ -133,27 +144,30 @@ string CppGenerator::wrap(const NodeKind& kind, const string& printed,
 }
 
 string CppGenerator::visit(const BinaryNode& n) {
-  // need to check if the node n has parent binary nodes that are tighter in
-  // precedence, if yes, then wrap current node in a parenthesis.
   int currLevel = findLevel(n.op);
   int oldTight = tightestP;
   tightestP = max(tightestP, currLevel);
-  string node = n.lhs.get()->callVisit(*this) + " " + n.op + " " +
-                n.rhs.get()->callVisit(*this);
+
+  string lhsStr = n.lhs.get()->callVisit(*this);
+  string rhsStr = n.rhs.get()->callVisit(*this);
+
+  string node = lhsStr + " " + n.op + " " + rhsStr;
   node = move(wrap(n.kind, node, oldTight, currLevel));
   tightestP = oldTight;
   return node;
 }
-
 string CppGenerator::visit(const UnaryNode& n) {
   if (n.op == "beg") {
-    // returns the shared_ptr construction,
-    return "std::shared_ptr(" + n.operand.get()->callVisit(*this) + ")";
-  } else if (n.op == "donate") {
-    // .reset to empty out the sjhared_pointer.
+    string t = pendingType.empty() ? "int" : pendingType;
+    return "std::make_shared<" + t + ">(" + n.operand.get()->callVisit(*this) +
+           ")";
+  }
+  if (n.op == "donate") {
+    // use the raw name, not the dereferenced one
+    if (n.operand->kind == NodeKind::NAME)
+      return as<NameNode>(n.operand.get())->id.name + ".reset()";
     return n.operand.get()->callVisit(*this) + ".reset()";
   }
-  // returns the visit.
   return n.op + n.operand.get()->callVisit(*this);
 }
 string CppGenerator::visit(const CallNode& n) {
@@ -199,19 +213,20 @@ string CppGenerator::visit(const MemberNode& n) {
   string accessor = (isHeapVar || isSharedPtrExpr) ? "->" : ".";
   return objectStr + accessor + n.member.get()->callVisit(*this);
 }
+
+bool CppGenerator::isHeapName(const NameNode& n) {
+  if (heapVars.count(n.id.full)) return true;
+  const Symbol* sym = lookupSymbol(n.id.full);
+  return sym && sym->isHeap;
+}
+
 string CppGenerator::visit(const NameNode& n) {
+  bool heap = isHeapName(n);
   if (n.isDecl) {
-    string cppType = n.id.type;
-
-    // Check if this declared variable is on the heap
-    const Symbol* sym = lookupSymbol(n.id.full);
-    if (sym && sym->isHeap) {
-      cppType = "std::shared_ptr<" + cppType + ">";
-    }
-
-    return cppType + " " + n.id.name + n.id.length;
+    string t = heap ? "std::shared_ptr<" + n.id.type + ">" : n.id.type;
+    return t + " " + n.id.name + n.id.length;
   }
-  return n.id.name;
+  return heap ? "*" + n.id.name : n.id.name;
 }
 string CppGenerator::visit(const LiteralNode& n) {
   if (n.litKind == LitKind::STRING) {
