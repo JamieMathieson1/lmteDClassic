@@ -1,4 +1,4 @@
-#include "../header/compiler.h"
+#include "../header/Compiler.h"
 
 #include <filesystem>
 #include <fstream>
@@ -7,11 +7,11 @@
 #include <stdexcept>
 
 #include "../header/CppGenerator.h"
-#include "../header/optimizer.h"
+#include "../header/Optimizer.h"
 #include "../header/SemanticAnalyser.h"
 #include "../header/Tree.h"
 #include "../header/Tokenizer.h"
-#include "../header/parser.h"
+#include "../header/Parser.h"
 
 namespace {
 
@@ -48,7 +48,7 @@ void writeFile(const std::string& path, const std::string& contents) {
 int Compiler::run(const std::string& inputPath, const std::string& outputPath) {
     std::string source = readFile(inputPath);
     Tokenizer tokenizer(source);
-    parser parsed(tokenizer);
+    Parser parsed(tokenizer);
     NodePtr ast = parsed.parse();
     auto* program = as<programNode>(ast.get());
     if (!program) {

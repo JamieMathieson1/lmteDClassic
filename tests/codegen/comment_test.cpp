@@ -1,6 +1,6 @@
 #include "../../header/CppGenerator.h"
 #include "../../header/Tokenizer.h"
-#include "../../header/parser.h"
+#include "../../header/Parser.h"
 #include <cassert>
 
 int main() {
@@ -8,7 +8,7 @@ int main() {
       "FAH before function\n"
       "F_int_main[void] d FFAH body comment HAFF return 1/ b";
   Tokenizer tokenizer(source);
-  parser parsed(tokenizer);
+  Parser parsed(tokenizer);
   NodePtr tree = parsed.parse();
 
   CppGenerator generator;

@@ -21,7 +21,7 @@ class parseError : public runtime_error {
 using namespace std;
 
 
-class parser {
+class Parser {
  private:
   // vars.
   std::vector<Token> tokens;
@@ -72,7 +72,7 @@ class parser {
   bool isP(string punctuation);
 
  public:
-  parser(Tokenizer& tokens);
-  ~parser();
+  Parser(Tokenizer& tokens);
+  ~Parser();
   NodePtr parse();
 };

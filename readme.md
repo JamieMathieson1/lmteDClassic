@@ -2,11 +2,11 @@
 
 ## Layout
 ### Generator
-Encapsulates parser, and reads values from there to gnerate the correct lines of code for the C++ compilation. 
+Encapsulates Parser, and reads values from there to gnerate the correct lines of code for the C++ compilation.
 ### Parser
 Reads in the file / (maybe add multiple files as an arg input if you can do that with mkfiles.) After this it passes the values to the tokenizer.
 ### Tokenizer.
-The tokenzier uses the values from the parser to create the correct values in the generator. Stores each unique element type in a container. Each value is linked to a map which points to its location in its container, and has a key of its line number. So iterators, conditionals, functions, variables, and class stuff , are stored seperately. 
+The tokenzier uses the values from the Parser to create the correct values in the generator. Stores each unique element type in a container. Each value is linked to a map which points to its location in its container, and has a key of its line number. So iterators, conditionals, functions, variables, and class stuff , are stored seperately.
 ### testFiles directory
 Store the test code files in here to generate D classic code.
 

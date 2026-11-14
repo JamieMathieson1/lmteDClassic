@@ -1,35 +1,35 @@
-#include "../header/parser.h"
+#include "../header/Parser.h"
 
 #include "../header/Tree.h"
 
-parser::parser(Tokenizer& t) {
+Parser::Parser(Tokenizer& t) {
   while (t.canPoll()) tokens.push_back(t.poll());
 }
 
-bool parser::isDone() { return position >= tokens.size(); }
+bool Parser::isDone() { return position >= tokens.size(); }
 
-Token& parser::cur() {
+Token& Parser::cur() {
   if (isDone()) fail("unexpected end of input");
   return tokens[position];
 }
 
-Token& parser::futureVision(size_t forward) {
+Token& Parser::futureVision(size_t forward) {
   if (position + forward >= tokens.size())
     fail("The tokens ran out (too far ahead).");
   return tokens[position + forward];
 }
 
-bool parser::is(TokenType type, string& text) {
+bool Parser::is(TokenType type, string& text) {
   return !isDone() && tokens[position].getType() == type &&
          tokens[position].getContent() == text;
 }
 
-Token& parser::expect(TokenType type, string text) {
+Token& Parser::expect(TokenType type, string text) {
   if (!is(type, text)) fail("expected: " + text + "");
   return tokens[position++];
 }
 
-void parser::fail(string msg) {
+void Parser::fail(string msg) {
   if (tokens.empty()) throw parseError(msg, 1, 1);
   if (isDone()) {
     const Token& last = tokens.back();
@@ -40,14 +40,14 @@ void parser::fail(string msg) {
                    t.getCharNum());
 }
 
-bool parser::declare(const string& fullName) {
+bool Parser::declare(const string& fullName) {
   for (auto& s : scopes)
     if (s.count(fullName)) return false;
   scopes.back().insert(fullName);
   return true;
 }
 
-size_t parser::matchingBracket(size_t open) {
+size_t Parser::matchingBracket(size_t open) {
   int depth = 0;
   for (size_t i = open; i < tokens.size(); i++) {
     if (tokens[i].getType() != TokenType::PUNCTUATOR) continue;
@@ -61,7 +61,7 @@ size_t parser::matchingBracket(size_t open) {
 }
 
 // Yoinks the node and pushes.
-NodePtr parser::parse() {
+NodePtr Parser::parse() {
   auto prog = make_unique<programNode>();
   pushScope();  // global scope
   while (!isDone()) prog->items.push_back(parseItem());
@@ -70,7 +70,7 @@ NodePtr parser::parse() {
 }
 
 // Helps parse class.
-NodePtr parser::parseItem() {
+NodePtr Parser::parseItem() {
   if (isK("lowkey") || isK("highkey"))
     fail("function modifiers are only valid on class member functions");
   if (cur().getType() == TokenType::IDENTIFIER) {
@@ -87,7 +87,7 @@ NodePtr parser::parseItem() {
 }
 
 // Helps to parsethe function arguments.
-NodePtr parser::parseFunction(bool isVirtual, bool isAbstract) {
+NodePtr Parser::parseFunction(bool isVirtual, bool isAbstract) {
   auto fn = make_unique<FunctionNode>(cur());
   fn->id = Ident::decode(cur().getContent());
   fn->isVirtual = isVirtual;
@@ -128,7 +128,7 @@ NodePtr parser::parseFunction(bool isVirtual, bool isAbstract) {
 }
 
 // C_Dog d ... b        C_Dog worships C_Animal, C_Pet d ... b
-NodePtr parser::parseClass() {
+NodePtr Parser::parseClass() {
   auto cls = make_unique<ClassNode>(cur());
   cls->id = Ident::decode(cur().getContent());
   position++;
@@ -171,7 +171,7 @@ NodePtr parser::parseClass() {
 }
 
 // Statements
-NodePtr parser::parseBlock(bool newScope) {
+NodePtr Parser::parseBlock(bool newScope) {
   auto blk = make_unique<BlockNode>(cur());
   expect(TokenType::PUNCTUATOR, "d");
   if (newScope) pushScope();
@@ -184,7 +184,7 @@ NodePtr parser::parseBlock(bool newScope) {
   return blk;
 }
 
-NodePtr parser::parseStatement() {
+NodePtr Parser::parseStatement() {
   if (isK("if")) return parseIf();
   if (isK("condition")) return parseFor();
   if (isK("tested")) return parseWhile();
@@ -201,7 +201,7 @@ NodePtr parser::parseStatement() {
 }
 
 // if[cond] d..b  (elseif[cond] d..b)*  (catch d..b)?
-NodePtr parser::parseIf() {
+NodePtr Parser::parseIf() {
   auto node = make_unique<IfNode>(cur());
   position++;
   expect(TokenType::PUNCTUATOR, "[");
@@ -223,7 +223,7 @@ NodePtr parser::parseIf() {
 }
 
 // for loop tester, let's there be empty stuff.
-NodePtr parser::parseFor() {
+NodePtr Parser::parseFor() {
   auto node = make_unique<ForNode>(cur());
   position++;
   expect(TokenType::PUNCTUATOR, "[");
@@ -241,7 +241,7 @@ NodePtr parser::parseFor() {
 }
 
 // tested[cond] d..b
-NodePtr parser::parseWhile() {
+NodePtr Parser::parseWhile() {
   auto node = make_unique<WhileNode>(cur());
   position++;
   expect(TokenType::PUNCTUATOR, "[");
@@ -252,7 +252,7 @@ NodePtr parser::parseWhile() {
 }
 
 // testing d..b tested[cond]/
-NodePtr parser::parseDoWhile() {
+NodePtr Parser::parseDoWhile() {
   auto node = make_unique<DoWhileNode>(cur());
   position++;
   node->body = parseBlock();
@@ -265,7 +265,7 @@ NodePtr parser::parseDoWhile() {
 }
 
 // return/    or    return expr/
-NodePtr parser::parseReturn() {
+NodePtr Parser::parseReturn() {
   auto node = make_unique<ReturnNode>(cur());
   position++;
   if (!isP("/")) node->value = parseExpr();
@@ -282,7 +282,7 @@ NodePtr parser::parseReturn() {
 //   postfix: [index]   ;member
 // ===========================================================================
 
-NodePtr parser::parseExpr() { 
+NodePtr Parser::parseExpr() {
   return parseAssign();
  }
 
@@ -291,7 +291,7 @@ static bool isAssignOp(const string& s) {
          s == "\\=" || s == "%=" || s == "&=" || s == "|=" || s == "^=";
 }
 
-NodePtr parser::parseAssign() {
+NodePtr Parser::parseAssign() {
   NodePtr lhs = parseBinary(0);
   if (!isDone() && cur().getType() == TokenType::OPERATOR &&
       isAssignOp(cur().getContent())) {
@@ -304,7 +304,7 @@ NodePtr parser::parseAssign() {
   return lhs;
 }
 
-NodePtr parser::parseBinary(int level) {
+NodePtr Parser::parseBinary(int level) {
   if (level >= (int)LEVELS.size()) return parseUnary();
   NodePtr lhs = parseBinary(level + 1);
   while (!isDone() && cur().getType() == TokenType::OPERATOR) {
@@ -322,7 +322,7 @@ NodePtr parser::parseBinary(int level) {
   return lhs;
 }
 
-NodePtr parser::parseUnary() {
+NodePtr Parser::parseUnary() {
   bool prefixOp = !isDone() && cur().getType() == TokenType::OPERATOR &&
                   (cur().getContent() == "!" ||
                    cur().getContent() == "+" ||
@@ -336,7 +336,7 @@ NodePtr parser::parseUnary() {
   return parsePower();
 }
 
-NodePtr parser::parsePower() {
+NodePtr Parser::parsePower() {
   NodePtr base = parsePostfix();
   if (isOp("**")) {
     auto node = make_unique<BinaryNode>(cur());
@@ -348,7 +348,7 @@ NodePtr parser::parsePower() {
   return base;
 }
 
-NodePtr parser::parsePostfix() {
+NodePtr Parser::parsePostfix() {
   NodePtr e = parsePrimary();
   while (true) {
     if (isP("[") && !as<CallNode>(e.get())) {
@@ -379,7 +379,7 @@ NodePtr parser::parsePostfix() {
 }
 
 // F_x_y[args]  |  C_X[args] (constructor)  |  plain V_/A_/C_ name
-NodePtr parser::parseCallOrName() {
+NodePtr Parser::parseCallOrName() {
   const Token& t = cur();
   Ident id = Ident::decode(t.getContent());
   bool bracketNext = position + 1 < tokens.size() &&
@@ -403,7 +403,7 @@ NodePtr parser::parseCallOrName() {
   return name;
 }
 
-vector<NodePtr> parser::parseArgs() {
+vector<NodePtr> Parser::parseArgs() {
   vector<NodePtr> args;
   expect(TokenType::PUNCTUATOR, "[");
   if (!isP("]")) {
@@ -420,7 +420,7 @@ vector<NodePtr> parser::parseArgs() {
   return args;
 }
 
-NodePtr parser::parsePrimary() {
+NodePtr Parser::parsePrimary() {
   const Token& t = cur();
 
   if (t.getType() == TokenType::LITERAL) {
@@ -471,24 +471,24 @@ NodePtr parser::parsePrimary() {
   return nullptr;  // fail() always throws, this just silences the warning
 }
 
-bool parser::isK(string keyWord) {
+bool Parser::isK(string keyWord) {
   return !isDone() && tokens[position].getType() == TokenType::KEYWORD &&
          tokens[position].getContent() == keyWord;
 }
 
-bool parser::isP(string punctuation) {
+bool Parser::isP(string punctuation) {
   return !isDone() && tokens[position].getType() == TokenType::PUNCTUATOR &&
          tokens[position].getContent() == punctuation;
 }
 
-bool parser::isOp(string op) {
+bool Parser::isOp(string op) {
   return !isDone() && tokens[position].getType() == TokenType::OPERATOR &&
          tokens[position].getContent() == op;
 }
 
 // Same check as isFunction(): F_... [ ... ] d
 // F_... [ ... ] d
-bool parser::isFunctionDef() {
+bool Parser::isFunctionDef() {
   if (isDone() || tokens[position].getType() != TokenType::IDENTIFIER)
     return false;
   if (tokens[position].getContent()[0] != 'F') return false;
@@ -500,4 +500,4 @@ bool parser::isFunctionDef() {
          tokens[close + 1].getContent() == "d";
 }
 
-parser::~parser() {}
+Parser::~Parser() {}

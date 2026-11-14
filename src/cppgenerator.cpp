@@ -171,7 +171,7 @@ string CppGenerator::visit(const UnaryNode& n) {
   if (n.op == "beg") {
     string t = pendingType.empty() ? "int" : pendingType;
     return "std::make_shared<" + t + ">(" + n.operand.get()->callVisit(*this) +
-           ")";
+")";
   }
   if (n.op == "donate") {
     // use the raw name, not the dereferenced one

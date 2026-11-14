@@ -474,7 +474,7 @@ void SemanticAnalyser::checkNode(const Node* node) {
       if (currentReturnType == SemanticType::UNKNOWN) {
         error(node, "Unknown function return type");
       }
-      // Parameters and the function body share the same scope in the parser.
+      // Parameters and the function body share the same scope in the Parser.
       enterScope();
       for (const auto& param : n->params) {
         auto* p = as<NameNode>(param.get());

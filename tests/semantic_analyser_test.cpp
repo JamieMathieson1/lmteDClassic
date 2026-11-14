@@ -9,7 +9,7 @@
 #include "../header/SemanticAnalyser.h"
 #include "../header/Tokenizer.h"
 #include "../header/Tree.h"
-#include "../header/parser.h"
+#include "../header/Parser.h"
 
 int main() {
   // Read source code from input.txt
@@ -28,7 +28,7 @@ int main() {
 
   try {
     Tokenizer tokenizer(source);
-    parser p(tokenizer);
+    Parser p(tokenizer);
     NodePtr ast = p.parse();
 
     auto* program = as<programNode>(ast.get());

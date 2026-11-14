@@ -14,7 +14,7 @@ using namespace std;
 // Seperate identifiers. kind is the first letter, full is the original text.
 
 // The debugger.
-// Prints an indented tree for checking the parser's output.
+// Prints an indented tree for checking the Parser's output.
 
 inline void dumpTree(const Node* n, ostream& o = cout, int depth = 0) {
   auto line = [&](const string& s) {

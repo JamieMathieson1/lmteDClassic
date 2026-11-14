@@ -4,17 +4,8 @@
 #include <stdexcept>
 #include <string>
 
-#include "../header/optimizer.h"
-#include "../header/Tree.h"
-
-// Parser header names vary between projects. Support the common casing.
-#if __has_include("Parser.h")
-    #include "Parser.h"
-#elif __has_include("parser.h")
-    #include "parser.h"
-#else
-    #error "Could not find Parser.h or parser.h. Add your parser header to the include path."
-#endif
+#include "../../header/Optimizer.h"
+#include "../../header/Parser.h"
 
 using namespace std;
 
@@ -59,7 +50,7 @@ int main(int argc, char* argv[]) {
         // If your Parser constructor accepts tokens instead, only this
         // adapter section needs to be changed to match Parser.h.
         Tokenizer tokenizer(source);
-        parser parsed(tokenizer);
+        Parser parsed(tokenizer);
         NodePtr ast = parsed.parse();
 
         if (!ast) {
