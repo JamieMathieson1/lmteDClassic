@@ -1,63 +1,76 @@
-# pragma once
+#pragma once
 
-# include "Tree.h"
-# include <string>
-# include <vector>
-# include <unordered_map>
+#include <string>
+#include <unordered_map>
+#include <vector>
+
+#include "Tree.h"
 
 enum class SemanticType {
-    INT,
-    FLOAT,
-    BOOL,
-    CHAR,
-    STRING,
-    VOID,
-    ARRAY,
-    CLASS,
-    UNKNOWN,
-    ERROR
+  INT,
+  FLOAT,
+  BOOL,
+  CHAR,
+  STRING,
+  VOID,
+  ARRAY,
+  CLASS,
+  UNKNOWN,
+  ERROR
 };
 
 struct Symbol {
-    string name;
-    SemanticType type;
+  string name;
+  SemanticType type;
+  bool isHeap;
 };
-
+struct Node;
+struct programNode;
+struct AssignNode;
 class SemanticAnalyser {
-    private:
-        using Scope = unordered_map<string, Symbol>;
-        vector<Scope> scope_list;
-        vector<string> errors;
-        SemanticType currentReturnType = SemanticType::UNKNOWN;
+ public:
+  const std::vector<std::unordered_map<std::string, Symbol>>& getScopeList()
+      const {
+    return scope_list;
+  }
 
-        // Managing Scope
-        void enterScope();
-        void exitScope();
+ private:
+  using Scope = unordered_map<string, Symbol>;
+  vector<Scope> scope_list;
+  vector<string> errors;
+  SemanticType currentReturnType = SemanticType::UNKNOWN;
 
-        // Managing Symbols
-        bool declare(const Symbol& symbol);
-        Symbol* lookup(const string& name);
+  // Managing Scope
+  void enterScope();
+  void exitScope();
 
-        // Handle Errors
-        void error(const Node* node, const string& message);
+  // Managing Symbols
+  bool declare(const Symbol& symbol);
+  Symbol* lookup(const string& name);
 
-        // Getting Type Helper Function
-        SemanticType getType(const string& type);
+  // Handle Errors
+  void error(const Node* node, const string& message);
 
-        // Check if a expression is correct when using binary nodes
-        SemanticType checkBinary(const string& op, SemanticType lhs, SemanticType rhs, const Node* node);
-        
-        // Check if a expression is correct when doing assignment and with assignment nodes
-        SemanticType checkAssignment(const AssignNode* node);
+  // Getting Type Helper Function
+  SemanticType getType(const string& type);
 
-        // Traverse the AST
-        void checkNode(const Node* node);
+  // Check if a expression is correct when using binary nodes
+  SemanticType checkBinary(const string& op, SemanticType lhs, SemanticType rhs,
+                           const Node* node);
 
-        // Analyse the Expression
-        SemanticType checkExpression(const Node* node);
-    public:
-        SemanticAnalyser();
-        bool analyse(const programNode& program);
-        bool hasErrors() const;
-        const vector<string>& getErrors() const;
+  // Check if a expression is correct when doing assignment and with assignment
+  // nodes
+  SemanticType checkAssignment(const AssignNode* node);
+
+  // Traverse the AST
+  void checkNode(const Node* node);
+
+  // Analyse the Expression
+  SemanticType checkExpression(const Node* node);
+
+ public:
+  SemanticAnalyser();
+  bool analyse(const programNode& program);
+  bool hasErrors() const;
+  const vector<string>& getErrors() const;
 };

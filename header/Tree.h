@@ -1,9 +1,9 @@
 #pragma once
 #include <bits/stdc++.h>
 using namespace std;
-#include "Tokenizer.h"
 #include "CppGenerator.h"
-
+#include "Tokenizer.h"
+class CppGenerator;
 struct Node;
 /// Give the unique pointer an alias cuz I'm lazy.
 using NodePtr = unique_ptr<Node>;
@@ -83,7 +83,6 @@ struct Node {
   Node(NodeKind k, const Token& t)
       : kind(k), line(t.getLine()), col(t.getCharNum()) {}
 };
-
 
 // Template return the node of type.
 template <class T>
