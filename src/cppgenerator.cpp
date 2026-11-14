@@ -4,6 +4,11 @@
 #include "../header/Utils.h"
 
 void CppGenerator::generate(const programNode& p) {
+  heapVars.clear();
+  pendingType.clear();
+  tightestP = 0;
+  level = 0;
+
   code = move(Utils::trim(visit(p)));
 }
 
@@ -198,20 +203,26 @@ const Symbol* CppGenerator::lookupSymbol(const string& name) {
 }
 
 string CppGenerator::visit(const MemberNode& n) {
-  string objectStr = n.object.get()->callVisit(*this);
+  string objectStr;
   string memberStr = n.member.get()->callVisit(*this);
 
   bool isHeapVar = false;
+
   if (n.object->kind == NodeKind::NAME) {
     auto* nameNode = as<NameNode>(n.object.get());
-    const Symbol* sym = lookupSymbol(nameNode->id.full);
-    if (sym && sym->isHeap) {
-      isHeapVar = true;
-    }
-  }
 
-  string accessor = isHeapVar ? "->" : ".";
-  return objectStr + accessor + memberStr;
+    isHeapVar = isHeapName(*nameNode);
+
+    // Don't dereference here: -> handles it.
+    if (isHeapVar) {
+      objectStr = nameNode->id.name;
+    } else {
+      objectStr = n.object.get()->callVisit(*this);
+    }
+  } else {
+    objectStr = n.object.get()->callVisit(*this);
+  }
+  return objectStr + (isHeapVar ? "->" : ".") + memberStr;
 }
 
 bool CppGenerator::isHeapName(const NameNode& n) {
