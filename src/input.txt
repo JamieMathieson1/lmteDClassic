@@ -10,5 +10,6 @@
                 donate V_int_y/
             b
 
-            return V_int_sum/
+            F_void_printf[{sum: %d}, V_int_sum]/
+            return 0/
         b
