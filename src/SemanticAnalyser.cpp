@@ -1,5 +1,6 @@
 #include "../header/SemanticAnalyser.h"
 
+#include <cctype>
 #include <iostream>
 
 SemanticAnalyser::SemanticAnalyser() { enterScope(); }
@@ -50,6 +51,8 @@ SemanticType SemanticAnalyser::getType(const string& type) {
   if (type == "char") return SemanticType::CHAR;
   if (type == "string") return SemanticType::STRING;
   if (type == "void") return SemanticType::VOID;
+  if (!type.empty() && isupper(static_cast<unsigned char>(type[0])))
+    return SemanticType::CLASS;
   return SemanticType::UNKNOWN;
 }
 
@@ -73,9 +76,23 @@ SemanticType SemanticAnalyser::checkExpression(const Node* node) {
       }
       return SemanticType::ERROR;
     }
-    // For the case of a variable node, check if the variable is declared
+      // For the case of a variable node, check if the variable is declared
     case NodeKind::NAME: {
       auto* n = as<NameNode>(node);
+      // Bare declaration with no initialiser, e.g.  V_int_age/
+      if (n->isDecl) {
+        SemanticType declared = getType(n->id.type);
+        if (declared == SemanticType::UNKNOWN ||
+            declared == SemanticType::VOID) {
+          error(node, "Invalid variable type");
+          return SemanticType::ERROR;
+        }
+        if (!declare({n->id.full, declared})) {
+          error(node, "Duplicate declaration: " + n->id.full);
+          return SemanticType::ERROR;
+        }
+        return declared;
+      }
       Symbol* symbol = lookup(n->id.full);
       if (!symbol) {
         error(node, "Unknown or undeclared variable: " + n->id.full);
@@ -142,8 +159,8 @@ SemanticType SemanticAnalyser::checkExpression(const Node* node) {
         if (argType == SemanticType::ERROR) {
           return SemanticType::ERROR;
         }
-        return result;
       }
+      return result;
     }
     // Array Literal Nodes Case
     case NodeKind::ARRAY_LITERAL: {

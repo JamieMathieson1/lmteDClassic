@@ -71,7 +71,14 @@ bool Tokenizer::isValidIdentifier(string& content) {
     string part;
     iss.ignore(content.size(), '_');
     getline(iss, part, '_');
-    if (!isValidType(part)) return false;
+
+    // Primitive type, or (variables only) a class name starting with a
+    // capital letter, e.g. V_Dog_rex
+    bool classType = content[0] == 'V' && !part.empty() &&
+                     isupper(static_cast<unsigned char>(part[0])) &&
+                     isValidName(part);
+    if (!TYPES.count(part) && !classType) return false;
+
     getline(iss, part, '\0');
 
     return isValidName(part);

@@ -69,6 +69,8 @@ class SemanticAnalyser {
   SemanticType checkExpression(const Node* node);
 
  public:
+  SemanticType resolveType(const string& t);
+  const Symbol* symbolOf(const Node* node);
   SemanticAnalyser();
   bool analyse(const programNode& program);
   bool hasErrors() const;
