@@ -75,4 +75,5 @@ class parser {
   parser(Tokenizer& tokens);
   ~parser();
   NodePtr parse();
+  ~parser();
 };

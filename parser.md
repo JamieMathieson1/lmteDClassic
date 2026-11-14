@@ -68,7 +68,7 @@ if (cur is an assignment operator) {   // the =
 
 It parses the next-tighter level, then loops while the next token is an operator at this level. This is the `while`-loop version of the textbook "expression prime" (E → T E') approach. Because `*` is tighter than `+`, it ends up lower in the tree.
 
-Below the binary levels: prefix operators (`!`, `-`, `beg`, `donate`), then `**` (right associative), then postfix (`[index]`, `;member`), then primary values.
+Below the binary levels: prefix operators (`!`, `+`, `-`, `beg`, `donate`), then `**` (right associative), then postfix (`[index]`, `;member`), then primary values.
 
 ## 5. What the tree looks like
 
