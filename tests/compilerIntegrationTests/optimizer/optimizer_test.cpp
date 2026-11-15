@@ -4,8 +4,8 @@
 #include <stdexcept>
 #include <string>
 
-#include "../../header/Optimizer.h"
-#include "../../header/Parser.h"
+#include "../../../header/Optimizer.h"
+#include "../../../header/Parser.h"
 
 using namespace std;
 
@@ -35,11 +35,11 @@ static void writeFile(const string& path, const string& contents) {
 int main(int argc, char* argv[]) {
     const string inputPath = (argc >= 2)
         ? argv[1]
-        : "tests/optimizer_pipeline.dc";
+        : "tests/compilerIntegrationTests/optimizer/optimizer_pipeline.dc";
 
     const string outputPath = (argc >= 3)
         ? argv[2]
-        : "tests/generated_cpp.txt";
+        : "tests/compilerIntegrationTests/optimizer/generated_cpp.txt";
 
     try {
         // 1. Read the D Classic source file.

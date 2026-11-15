@@ -7,11 +7,20 @@ Encapsulates Parser, and reads values from there to gnerate the correct lines of
 Reads in the file / (maybe add multiple files as an arg input if you can do that with mkfiles.) After this it passes the values to the tokenizer.
 ### Tokenizer.
 The tokenzier uses the values from the Parser to create the correct values in the generator. Stores each unique element type in a container. Each value is linked to a map which points to its location in its container, and has a key of its line number. So iterators, conditionals, functions, variables, and class stuff , are stored seperately.
-### testFiles directory
-Store the test code files in here to generate D classic code.
+### Tests
+`tests/unitTests` contains focused component tests. They use the local
+test runner and can all be run with:
 
-### unitTests
-Folder for testing individual features in the code base. 
+```sh
+make unit-tests
+```
+
+The unit suite covers tokenizer, parser, optimizer, semantic analysis, and
+code generation without reading compiler fixture files.
+
+`tests/compilerIntegrationTests` contains end-to-end compiler tests and the
+source fixtures they require. Run those with `make compiler-tests`, or run
+both tiers with `make testall`.
 
 ### makefile
 

@@ -14,8 +14,8 @@
 
 namespace fs = std::filesystem;
 
-static const fs::path IN_DIR = "tests/unitTests/testCase";
-static const fs::path OUT_DIR = "tests/unitTests/output";
+static const fs::path IN_DIR = "tests/compilerIntegrationTests/testCase";
+static const fs::path OUT_DIR = "tests/compilerIntegrationTests/output";
 
 static std::string readFile(const fs::path& p) {
   std::ifstream f(p, std::ios::binary);
