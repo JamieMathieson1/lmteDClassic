@@ -17,16 +17,6 @@ class Dog {
         }
 };
 int main() {
-    Dog rex;
-    Dog fido;
-    rex.setage(3);
-    rex.setweight(20);
-    fido.setage(9);
-    fido.setweight(35);
-    printf("rex:  age %d weight %d\n", rex.getage(), rex.getweight());
-    printf("fido: age %d weight %d\n", fido.getage(), fido.getweight());
-    rex.setage(4);
-    printf("rex:  age %d\n", rex.getage());
-    printf("fido: age %d\n", fido.getage());
+    std::shared_ptr<string> r = std::make_shared<string>("1220");
     return 0;
 }

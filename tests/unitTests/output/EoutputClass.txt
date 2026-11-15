@@ -1,0 +1,17 @@
+class Dog {
+    public: 
+        int age;
+        int weight;
+        void setage(int newage) {
+            age = newage;
+        }
+        int getage() {
+            return age;
+        }
+        void setweight(int newweight) {
+            weight = newweight;
+        }
+        int getweight() {
+            return weight;
+        }
+};
