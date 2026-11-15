@@ -57,6 +57,10 @@ struct Symbol {
 struct Node;
 struct programNode;
 struct AssignNode;
+struct FunctionSignature {
+  SemanticType returnType;
+  std::vector<SemanticType> parameterTypes;
+};
 class SemanticAnalyser {
  public:
   const std::vector<std::unordered_map<std::string, Symbol>>& getScopeList()
