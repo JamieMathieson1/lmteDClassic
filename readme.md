@@ -1,20 +1,39 @@
-# D Classic Compiler.
+# D Classic Compiler
 
-## Layout
-### Generator
-Encapsulates Parser, and reads values from there to gnerate the correct lines of code for the C++ compilation.
-### Parser
-Reads in the file / (maybe add multiple files as an arg input if you can do that with mkfiles.) After this it passes the values to the tokenizer.
-### Tokenizer.
-The tokenzier uses the values from the Parser to create the correct values in the generator. Stores each unique element type in a container. Each value is linked to a map which points to its location in its container, and has a key of its line number. So iterators, conditionals, functions, variables, and class stuff , are stored seperately.
-### testFiles directory
-Store the test code files in here to generate D classic code.
+D Classic source is compiled to C++ in five stages:
 
-### unitTests
-Folder for testing individual features in the code base. 
+1. The tokenizer converts source text into tokens.
+2. The parser builds an abstract syntax tree (AST).
+3. The semantic analyser checks names, scopes, types, and control-flow rules.
+4. The optimizer rewrites the AST.
+5. The C++ generator emits the final source file.
 
-### makefile
+The compiler entry point is `src/compiler.cpp`; the reusable pipeline is
+`Compiler::run` in `src/Compiler.cpp`.
 
-should ideally be able to take in arguments about the generation. Also, we should probably add a command change that enables or disables optimisations.
-This isn't hard, it also helps us modularise the code without the optimisations as it literally just means having less features used. 
-## Intention of use
+## Documentation
+
+- [Project layout](layout.md) - source, headers, generated output, and fixtures.
+- [Tokenization and source syntax](tokenization.md) - names, literals, operators,
+  comments, and delimiters.
+- [Compiler stages](compiler_pipeline.md) - parser, semantic analyser,
+  optimizer, AST nodes, and language-feature implementation map.
+- [Testing guide](testing.md) - unit tests, compiler integration tests, and
+  how to add bespoke cases.
+
+## Quick start
+
+Build the compiler and compile a source file:
+
+```sh
+make
+./compiler tests/compilerIntegrationTests/input/basics.dc output/generated.cpp
+```
+
+Run all tests:
+
+```sh
+make testall
+```
+
+The make targets and fixture workflow are described in [Testing guide](testing.md).
