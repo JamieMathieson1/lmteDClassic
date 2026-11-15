@@ -1,2 +1,5 @@
---- SEMANTIC ERRORS ---
-Semantic error has occured at 6:3: Undefined function: F_void_printf
+int main() {
+    std::shared_ptr<string> r = std::make_shared<string>("1220");
+    printf("%d", *r);
+    return 0;
+}

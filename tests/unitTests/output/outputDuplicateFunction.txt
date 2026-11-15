@@ -1,4 +1,2 @@
 --- SEMANTIC ERRORS ---
-Semantic error has occured at 3:5: Undefined function: F_void_printf
 Semantic error has occured at 6:1: Duplicate function definition: a
-Semantic error has occured at 11:5: Undefined function: F_void_printf
