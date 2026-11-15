@@ -1,29 +1,39 @@
-# D Classic Compiler.
+# D Classic Compiler
 
-## Layout
-### Generator
-Encapsulates Parser, and reads values from there to gnerate the correct lines of code for the C++ compilation.
-### Parser
-Reads in the file / (maybe add multiple files as an arg input if you can do that with mkfiles.) After this it passes the values to the tokenizer.
-### Tokenizer.
-The tokenzier uses the values from the Parser to create the correct values in the generator. Stores each unique element type in a container. Each value is linked to a map which points to its location in its container, and has a key of its line number. So iterators, conditionals, functions, variables, and class stuff , are stored seperately.
-### Tests
-`tests/unitTests` contains focused component tests. They use the local
-test runner and can all be run with:
+D Classic source is compiled to C++ in five stages:
+
+1. The tokenizer converts source text into tokens.
+2. The parser builds an abstract syntax tree (AST).
+3. The semantic analyser checks names, scopes, types, and control-flow rules.
+4. The optimizer rewrites the AST.
+5. The C++ generator emits the final source file.
+
+The compiler entry point is `src/compiler.cpp`; the reusable pipeline is
+`Compiler::run` in `src/Compiler.cpp`.
+
+## Documentation
+
+- [Project layout](layout.md) - source, headers, generated output, and fixtures.
+- [Tokenization and source syntax](tokenization.md) - names, literals, operators,
+  comments, and delimiters.
+- [Compiler stages](compiler_pipeline.md) - parser, semantic analyser,
+  optimizer, AST nodes, and language-feature implementation map.
+- [Testing guide](testing.md) - unit tests, compiler integration tests, and
+  how to add bespoke cases.
+
+## Quick start
+
+Build the compiler and compile a source file:
 
 ```sh
-make unit-tests
+make
+./compiler tests/compilerIntegrationTests/input/basics.dc output/generated.cpp
 ```
 
-The unit suite covers tokenizer, parser, optimizer, semantic analysis, and
-code generation without reading compiler fixture files.
+Run all tests:
 
-`tests/compilerIntegrationTests` contains end-to-end compiler tests and the
-source fixtures they require. Run those with `make compiler-tests`, or run
-both tiers with `make testall`.
+```sh
+make testall
+```
 
-### makefile
-
-should ideally be able to take in arguments about the generation. Also, we should probably add a command change that enables or disables optimisations.
-This isn't hard, it also helps us modularise the code without the optimisations as it literally just means having less features used. 
-## Intention of use
+The make targets and fixture workflow are described in [Testing guide](testing.md).

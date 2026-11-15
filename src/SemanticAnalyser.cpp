@@ -103,7 +103,8 @@ SemanticType SemanticAnalyser::checkExpression(const Node* node) {
       auto* n = as<NameNode>(node);
       // Bare declaration with no initialiser, e.g.  V_int_age/
       if (n->isDecl) {
-        SemanticType declared = getType(n->id.type);
+        SemanticType declared =
+            n->id.kind == 'A' ? SemanticType::ARRAY : getType(n->id.type);
         if (declared == SemanticType::UNKNOWN ||
             declared == SemanticType::VOID) {
           error(node, "Invalid variable type");
@@ -134,6 +135,14 @@ SemanticType SemanticAnalyser::checkExpression(const Node* node) {
     // Checking for the case of unary nodes
     case NodeKind::UNARY: {
       auto* n = as<UnaryNode>(node);
+      if (n->op == "beg" && n->operand) {
+          if (const auto* name = as<NameNode>(n->operand.get())) {
+              return getType(name->id.type);
+          }
+          if (const auto* call = as<CallNode>(n->operand.get())) {
+              return getType(call->callee.type);
+          }
+      }
       SemanticType operand = checkExpression(n->operand.get());
       if (operand == SemanticType::ERROR) {
         return SemanticType::ERROR;
@@ -176,7 +185,7 @@ SemanticType SemanticAnalyser::checkExpression(const Node* node) {
     case NodeKind::CALL: {
       auto* n = as<CallNode>(node);
       SemanticType result;
-      if (n->callee.kind == 'F') {
+      if (n->callee.kind == 'F' || n->callee.kind == 'V') {
         result = getType(n->callee.type);
       } else if (n->callee.kind == 'C') {
         result = SemanticType::CLASS;
@@ -345,7 +354,8 @@ SemanticType SemanticAnalyser::checkAssignment(const AssignNode* node) {
       error(node, "Declarations must use '='");
       return SemanticType::ERROR;
     }
-    SemanticType declared = getType(target->id.type);
+    SemanticType declared =
+        target->id.kind == 'A' ? SemanticType::ARRAY : getType(target->id.type);
     if (declared == SemanticType::UNKNOWN || declared == SemanticType::VOID) {
       error(node, "Invalid variable type");
       return SemanticType::ERROR;
@@ -386,7 +396,7 @@ SemanticType SemanticAnalyser::checkAssignment(const AssignNode* node) {
     return SemanticType::ERROR;
   }
   if (node->op == "=") {
-    if (lhs != rhs &&
+    if (lhs != SemanticType::UNKNOWN && lhs != rhs &&
         !(lhs == SemanticType::FLOAT && rhs == SemanticType::INT) &&
         rhs != SemanticType::UNKNOWN) {
       error(node, "Assignment type mismatch");
@@ -395,6 +405,9 @@ SemanticType SemanticAnalyser::checkAssignment(const AssignNode* node) {
     return lhs;
   }
   // Compound Assignment
+  if (lhs == SemanticType::UNKNOWN) {
+    return lhs;
+  }
   string binaryOp = node->op.substr(0, node->op.size() - 1);
   SemanticType result = checkBinary(binaryOp, lhs, rhs, node);
   if (result == SemanticType::ERROR) {

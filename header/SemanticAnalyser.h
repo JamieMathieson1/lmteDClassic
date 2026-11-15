@@ -31,6 +31,10 @@ struct Symbol {
 struct Node;
 struct programNode;
 struct AssignNode;
+struct FunctionSignature {
+  SemanticType returnType;
+  std::vector<SemanticType> parameterTypes;
+};
 class SemanticAnalyser {
  public:
   const std::vector<std::unordered_map<std::string, Symbol>>& getScopeList()
@@ -49,6 +53,7 @@ class SemanticAnalyser {
   using Scope = unordered_map<string, Symbol>;
   vector<Scope> scope_list;
   vector<string> errors;
+  unordered_map<string, FunctionSignature> functionSignatures;
   SemanticType currentReturnType = SemanticType::UNKNOWN;
 
   // Managing the creation and removal of Scopes
