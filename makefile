@@ -10,7 +10,7 @@ compiler:
 	$(CPP) $(CXXFLAGS) $(SOURCES) -o compiler
 
 clean:
-	rm -f compiler
+	rm -f compiler runTests runTests.dbg
 
 test:
 	g++ -std=c++20 tests/semantic_analyser_test.cpp src/cppgenerator.cpp src/SemanticAnalyser.cpp src/tokenizer.cpp src/parser.cpp src/Tree.cpp src/optimizer.cpp src/utils.cpp -o runCode

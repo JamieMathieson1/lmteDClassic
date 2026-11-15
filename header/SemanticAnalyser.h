@@ -1,11 +1,14 @@
 #pragma once
 
-# include "Tree.h"
-# include <string>
-# include <vector>
-# include <unordered_map>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
-// This enumeration defines the multiple different data types that the semantic analyser can recognise.
+#include "Tree.h"
+
+// This enumeration defines the multiple different data types that the semantic
+// analyser can recognise.
 enum class SemanticType {
   INT,
   FLOAT,
@@ -36,35 +39,38 @@ class SemanticAnalyser {
   }
 
  private:
-        // Private Variables include:
-        // 1. A Scope type as an unordered map that linkes variable names with their Symbol info
-        // 2. A scope_list which holds all the currently active scopes
-        // 3. A list of all the errors discovered during the analysis.
-        // 4. A currentReturnType variable that keeps track of the return type of the function being analysed.
+  // Private Variables include:
+  // 1. A Scope type as an unordered map that linkes variable names with their
+  // Symbol info
+  // 2. A scope_list which holds all the currently active scopes
+  // 3. A list of all the errors discovered during the analysis.
+  // 4. A currentReturnType variable that keeps track of the return type of the
+  // function being analysed.
   using Scope = unordered_map<string, Symbol>;
   vector<Scope> scope_list;
   vector<string> errors;
   SemanticType currentReturnType = SemanticType::UNKNOWN;
 
-        // Managing the creation and removal of Scopes
-        void enterScope();
-        void exitScope();
+  // Managing the creation and removal of Scopes
+  void enterScope();
+  void exitScope();
 
-        // Managing Variable Declarations and Symbol Table lookup
-        bool declare(const Symbol& symbol);
-        Symbol* lookup(const string& name);
+  // Managing Variable Declarations and Symbol Table lookup
+  bool declare(const Symbol& symbol);
+  Symbol* lookup(const string& name);
 
-        // Record and Associates any errors
-        void error(const Node* node, const string& message);
+  // Record and Associates any errors
+  void error(const Node* node, const string& message);
 
   // Getting Type Helper Function
   SemanticType getType(const string& type);
 
-        // Do a specialised check for a binary expression
-        SemanticType checkBinary(const string& op, SemanticType lhs, SemanticType rhs, const Node* node);
-        
-        // Do a specialised check for assignment expressions
-        SemanticType checkAssignment(const AssignNode* node);
+  // Do a specialised check for a binary expression
+  SemanticType checkBinary(const string& op, SemanticType lhs, SemanticType rhs,
+                           const Node* node);
+
+  // Do a specialised check for assignment expressions
+  SemanticType checkAssignment(const AssignNode* node);
 
   // Traverse the AST
   void checkNode(const Node* node);
@@ -73,10 +79,16 @@ class SemanticAnalyser {
   SemanticType checkExpression(const Node* node);
 
  public:
+  string currentClass;
+  bool inFunction = false;
+  unordered_set<string> declaredFunctions;
+  unordered_set<string> declaredClasses;
+  bool alwaysReturns(const Node* node) const;
   SemanticType resolveType(const string& t);
   const Symbol* symbolOf(const Node* node);
   SemanticAnalyser();
   bool analyse(const programNode& program);
   bool hasErrors() const;
   const vector<string>& getErrors() const;
+  void requireBool(const Node* at, SemanticType t, const string& what);
 };

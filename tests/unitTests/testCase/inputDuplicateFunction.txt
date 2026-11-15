@@ -1,0 +1,14 @@
+
+F_void_a[] d 
+    F_void_printf[{1232323232}]/
+    return/
+b
+F_void_a[] d 
+    F_void_printf[{1232323232}]/
+    return/
+b
+F_int_main[void] d 
+    F_void_printf[{1232323232}]/
+    F_void_a[]/
+    return 0/
+b

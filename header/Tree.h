@@ -96,7 +96,7 @@ const T* as(const Node* n) {
 }
 
 // Literals types.
-enum class LitKind { INT, FLOAT, BOOL, STRING };
+enum class LitKind { INT, FLOAT, BOOL, STRING, CHAR };
 
 // The Literals.,
 struct LiteralNode : Node {
@@ -111,8 +111,9 @@ struct LiteralNode : Node {
 struct NameNode : Node {
   static constexpr NodeKind KIND = NodeKind::NAME;
   Ident id;
-  vector<NodePtr> initArgs;   // V_Dog_rex(3, 4)  /  A_Dog[3]_dogs(5)  /  beg V_int_x(10)
-  bool hasInit = false;       // distinguishes V_int_x() from V_int_x 
+  vector<NodePtr>
+      initArgs;  // V_Dog_rex(3, 4)  /  A_Dog[3]_dogs(5)  /  beg V_int_x(10)
+  bool hasInit = false;  // distinguishes V_int_x() from V_int_x
   bool isDecl = false;
   NameNode(const Token& t) : Node(KIND, t) {}
   string callVisit(CppGenerator& g) const override;
