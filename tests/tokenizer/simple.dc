@@ -1,4 +1,5 @@
-V_int_x = 10/
-V_float_y = 3.14/
+V_string_s = {hello world}/
 A_int[3]_nums = (1, 2, 3)/
 A_A_int[2][3]_grid/
+A_A_int[2][3]_dynamicGrid = beg A_A_int[1][2]/
+V_int_dynamic = beg V_Dog({lmao dead lmao})/

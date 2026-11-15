@@ -1,5 +1,6 @@
 #pragma once 
 #include <string>
+#include "Utils.h"
 
 using namespace std;
 
@@ -10,8 +11,6 @@ enum class TokenType {
     PUNCTUATOR, 
     KEYWORD
 };
-
-
 
 class Token {
     private: 

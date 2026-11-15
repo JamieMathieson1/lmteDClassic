@@ -235,8 +235,9 @@ bool CppGenerator::isHeapName(const NameNode& n) {
 }
 
 string CppGenerator::visit(const NameNode& n) {
-  bool heap = isHeapName(n);
-  if (n.isDecl) {
+  bool heap = isHeapName(n); 
+  if (n.isDecl) { // heap and the right side with the make shared statement doesn't 
+    // use the name and type, so need to only print the type for the heap and right side of assign
     string t = heap ? "std::shared_ptr<" + n.id.type + ">" : n.id.type;
     return t + " " + n.id.name + n.id.length;
   }

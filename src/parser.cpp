@@ -330,7 +330,11 @@ NodePtr Parser::parseUnary() {
   if (prefixOp || isK("beg") || isK("donate")) {
     auto node = make_unique<UnaryNode>(cur());
     position++;
+    if (isK("beg")) {
+      heapRightAss = true;
+    }
     node->operand = parseUnary();
+    if (heapRightAss) heapRightAss = false;
     return node;
   }
   return parsePower();
@@ -395,11 +399,30 @@ NodePtr Parser::parseCallOrName() {
     return call;
   }
 
-  auto name = make_unique<NameNode>(t);
+   auto name = make_unique<NameNode>(t);
   name->id = id;
-  if (!suppressDecl && (id.kind == 'V' || id.kind == 'A'))
+  if (!heapRightAss && !suppressDecl && (id.kind == 'V' || id.kind == 'A'))
     name->isDecl = declare(id.full);
   position++;
+
+  // constructor args: V_int_x(10), A_Dog[3]_dogs(5, 6), beg V_Dog_rex(3)
+  if ((id.kind == 'V' || id.kind == 'A') && isP("(") && !suppressDecl) {
+    if (!name->isDecl && !heapRightAss)
+      fail("constructor arguments are only allowed on a declaration");
+    name->hasInit = true;
+    position++;  // '('
+    if (!isP(")")) {
+      while (true) {
+        name->initArgs.push_back(parseExpr());
+        if (isP(",")) {
+          position++;
+          continue;
+        }
+        break;
+      }
+    }
+    expect(TokenType::PUNCTUATOR, ")");
+  }
   return name;
 }
 

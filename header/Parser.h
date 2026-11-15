@@ -28,6 +28,7 @@ class Parser {
   size_t position = 0;
   vector<unordered_set<string>> scopes;
   bool suppressDecl = false;
+  bool heapRightAss = false; // if a variable is on the right side of a heap assignment, we only expect V_type after beg
   // Finders and ifno getters.
   Token& cur();
 

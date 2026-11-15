@@ -34,7 +34,8 @@ bool Tokenizer::isValidLiteral(string& content) {
 
 bool Tokenizer::isValidName(string& name) {
   if (name.empty()) return false;
-  return all_of(name.begin(), name.end(), ::isalnum);
+  // alpha numeric and no keywords
+  return all_of(name.begin(), name.end(), ::isalnum) && !KEYWORDS.count(name) && !TYPES.count(name) && !BOOL_LITERALS.count(name); 
 }
 
 bool Tokenizer::arrayIdentifier(string& arr) {
@@ -66,7 +67,8 @@ bool Tokenizer::isValidIdentifier(string& content) {
   // type can only be a valid type, name can have only letters and numbers.
   // or 'a_type_name[length]' where type can be recursively defined as an array
   // recursively or a type
-  if (content.starts_with("V_") || content.starts_with("F_")) {
+  bool isVar = content.starts_with("V_");
+  if (isVar || content.starts_with("F_")) {
     istringstream iss(content);
     string part;
     iss.ignore(content.size(), '_');
@@ -79,17 +81,25 @@ bool Tokenizer::isValidIdentifier(string& content) {
                      isValidName(part);
     if (!TYPES.count(part) && !classType) return false;
 
-    getline(iss, part, '\0');
-
+    if (!getline(iss, part, '\0')) {
+      // no name, valid
+      return isVar;
+    };
+    // if arguments inside a '()' then also valid
+    
     return isValidName(part);
   } else if (content.starts_with("A_")) {
     // A_<array type>_name -> name is after the last '_', the rest is the array
-    // type
+    // type    
     size_t sep = content.rfind('_');
+    // must have it, and can't be the last thing. 
     if (sep == string::npos || sep == content.size() - 1) return false;
 
     string name = content.substr(sep + 1);
-    if (!isValidName(name)) return false;
+    if (!isValidName(name)) {
+      // can only be an after beg token : A_type
+      return arrayIdentifier(content);
+    } 
 
     string type = content.substr(0, sep);
     return arrayIdentifier(type);

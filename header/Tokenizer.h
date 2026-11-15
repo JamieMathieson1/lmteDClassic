@@ -2,7 +2,6 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
-
 #include "Token.h"
 
 using namespace std;
@@ -32,7 +31,7 @@ const unordered_set<string> BOOL_LITERALS = {"True", "False"};
 
 const unordered_set<char> PUNCTUATORS = {
     '[', ']',  // conditions, params, array length
-    '(', ')',  // grouping, array literals
+    '(', ')',  // grouping, array literals, calling constructors in beg
     ',',       // separators
     ';',       // member access
     '/', 'd',

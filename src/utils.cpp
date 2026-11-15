@@ -1,4 +1,5 @@
 #include "../header/Utils.h"
+#include "../header/Token.h"
 
 const char* Utils::toString(TokenType t) {
     switch (t) {

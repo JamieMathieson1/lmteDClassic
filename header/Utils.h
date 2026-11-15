@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
-#include "Token.h"
+
+enum class TokenType;
 
 using namespace std;
 
