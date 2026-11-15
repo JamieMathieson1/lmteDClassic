@@ -37,7 +37,7 @@ test: unit-tests
 testall: unit-tests compiler-tests
 
 clean:
-	rm -f compiler
+	rm -f compiler runTests runTests.dbg
 
 clean-output:
 	rm -f tests/compilerIntegrationTests/output/output*.txt

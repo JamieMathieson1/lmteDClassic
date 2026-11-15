@@ -1,0 +1,13 @@
+void a() {
+    printf("1232323232");
+    return;
+}
+void a() {
+    printf("1232323232");
+    return;
+}
+int main() {
+    printf("1232323232");
+    a();
+    return 0;
+}

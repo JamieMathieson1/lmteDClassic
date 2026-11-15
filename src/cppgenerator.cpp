@@ -79,8 +79,9 @@ string CppGenerator::visit(const ExprStmtNode& n) {
   return indent() + n.expr.get()->callVisit(*this) + ";\n";
 }
 
-string CppGenerator::visit(const ReturnNode& n) {
-  return indent() + "return " + n.value.get()->callVisit(*this) + ";\n";
+std::string CppGenerator::visit(const ReturnNode& n) {
+  if (!n.value) return indent() + "return;\n";
+  return indent() + "return " + n.value->callVisit(*this) + ";\n";
 }
 
 string CppGenerator::visit(const IfNode& n) {
@@ -171,7 +172,7 @@ string CppGenerator::visit(const UnaryNode& n) {
   if (n.op == "beg") {
     string t = pendingType.empty() ? "int" : pendingType;
     return "std::make_shared<" + t + ">(" + n.operand.get()->callVisit(*this) +
-")";
+           ")";
   }
   if (n.op == "donate") {
     // use the raw name, not the dereferenced one
@@ -235,26 +236,27 @@ bool CppGenerator::isHeapName(const NameNode& n) {
 }
 
 string CppGenerator::visit(const NameNode& n) {
-  bool heap = isHeapName(n); 
-  // if var is on the left side 
-  if (n.isDecl) { // heap and the right side with the make shared statement doesn't 
-    // use the name and type, so need to only print the type for the heap and right side of assign
+  bool heap = isHeapName(n);
+  // if var is on the left side
+  if (n.isDecl) {  // heap and the right side with the make shared statement
+                   // doesn't
+    // use the name and type, so need to only print the type for the heap and
+    // right side of assign
     string t = heap ? "std::shared_ptr<" + n.id.type + ">" : n.id.type;
     return t + " " + n.id.name + n.id.length;
   }
-  
-  // right assignment of heap, only output its args 
+
+  // right assignment of heap, only output its args
   if (n.heapRightAss) {
     if (!n.hasInit) return "";
     string args;
-    for (const NodePtr& arg : n.initArgs) {
-      args.append(arg.get()->callVisit(*this) + ", ");
+    for (size_t i = 0; i < n.initArgs.size(); ++i) {
+      if (i > 0) args += ", ";
+      args += n.initArgs[i]->callVisit(*this);
     }
-    args.pop_back(); args.pop_back();
     return args;
   }
-
-  // if var in expression 
+  // if var in expression
   return heap ? "*" + n.id.name : n.id.name;
 }
 string CppGenerator::visit(const LiteralNode& n) {

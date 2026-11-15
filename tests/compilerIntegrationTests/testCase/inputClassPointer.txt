@@ -1,0 +1,12 @@
+FAH Tests: bare member declarations, class-typed variable, setters/getters,
+FAH zero-argument calls, member calls as printf arguments.
+C_Dog d
+  V_int_age/
+  V_int_weight/
+
+b
+FAH dsdsdssds
+F_int_main[void] d
+  V_Dog_r = beg V_Dog()/
+  return 0/
+b
