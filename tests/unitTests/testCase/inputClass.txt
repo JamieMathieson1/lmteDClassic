@@ -4,7 +4,5 @@ C_Dog d
 b
 
 F_int_main[void] d
-  V_Dog_r = beg V_Dog/
-  V_Dog_r;V_int_age = 10/
   return 0/
 b

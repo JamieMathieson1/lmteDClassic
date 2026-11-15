@@ -1,5 +1,2 @@
-int main() {
-    std::shared_ptr<string> r = std::make_shared<string>("abcdefg");
-    print("%s", *r);
-    return 0;
-}
+--- SEMANTIC ERRORS ---
+Semantic error has occured at 4:3: Undefined function: F_void_print

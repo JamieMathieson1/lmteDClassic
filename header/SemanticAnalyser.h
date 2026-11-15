@@ -1,13 +1,14 @@
 #pragma once
 
-#include <string>
-#include <unordered_map>
-#include <unordered_set>
-#include <vector>
+#include <bits/stdc++.h>
 
 #include "Tree.h"
-
-// This enumeration defines the multiple different data types that the semantic
+struct Node;
+struct FunctionNode;
+struct Ident;
+using NodePtr =
+    std::unique_ptr<Node>;  // This enumeration defines the multiple different
+                            // data types that the semantic
 // analyser can recognise.
 enum class SemanticType {
   INT,
@@ -21,13 +22,38 @@ enum class SemanticType {
   UNKNOWN,
   ERROR
 };
+struct Ident;
+struct TypeInfo {
+  SemanticType kind = SemanticType::UNKNOWN;
+  string className;
+  SemanticType elem = SemanticType::UNKNOWN;
 
-// This struct is representing symbols within the table
+  TypeInfo() = default;
+
+  TypeInfo(SemanticType k) : kind(k) {}
+
+  TypeInfo(SemanticType k, string cls) : kind(k), className(std::move(cls)) {}
+
+  bool operator==(SemanticType k) const { return kind == k; }
+
+  bool operator!=(SemanticType k) const { return kind != k; }
+
+  bool operator==(const TypeInfo& other) const {
+    return kind == other.kind && className == other.className &&
+           elem == other.elem;
+  }
+
+  bool operator!=(const TypeInfo& other) const { return !(*this == other); }
+};
 struct Symbol {
   string name;
-  SemanticType type;
-  bool isHeap;
+  TypeInfo type;
+  bool isHeap = false;
+  bool freed = false;
+  bool isFunction = false;
+  vector<TypeInfo> params;
 };
+
 struct Node;
 struct programNode;
 struct AssignNode;
@@ -44,12 +70,11 @@ class SemanticAnalyser {
   // Symbol info
   // 2. A scope_list which holds all the currently active scopes
   // 3. A list of all the errors discovered during the analysis.
-  // 4. A currentReturnType variable that keeps track of the return type of the
-  // function being analysed.
+  // 4. A currentReturnType variable that keeps track of the return type of
+  // the function being analysed.
   using Scope = unordered_map<string, Symbol>;
   vector<Scope> scope_list;
   vector<string> errors;
-  SemanticType currentReturnType = SemanticType::UNKNOWN;
 
   // Managing the creation and removal of Scopes
   void enterScope();
@@ -66,29 +91,38 @@ class SemanticAnalyser {
   SemanticType getType(const string& type);
 
   // Do a specialised check for a binary expression
-  SemanticType checkBinary(const string& op, SemanticType lhs, SemanticType rhs,
-                           const Node* node);
 
+  TypeInfo checkBinary(const string& op, const TypeInfo& lhs,
+                       const TypeInfo& rhs, const Node* node);
   // Do a specialised check for assignment expressions
-  SemanticType checkAssignment(const AssignNode* node);
+  TypeInfo checkAssignment(const AssignNode* node);
 
   // Traverse the AST
   void checkNode(const Node* node);
-
+  TypeInfo currentReturnType;
+  unordered_map<string, vector<string>> classBases;
   // Analyse the Expression
-  SemanticType checkExpression(const Node* node);
+  TypeInfo checkExpression(const Node* node);
 
  public:
+  bool assignable(const TypeInfo& to, const TypeInfo& from) const;
+  bool isSubclass(const string& derived, const string& base) const;
+  bool checkArgs(const Symbol& f, const vector<NodePtr>& args, const Node* at);
+  Symbol makeFunctionSymbol(const FunctionNode* f);
   string currentClass;
   bool inFunction = false;
   unordered_set<string> declaredFunctions;
   unordered_set<string> declaredClasses;
+
   bool alwaysReturns(const Node* node) const;
   SemanticType resolveType(const string& t);
   const Symbol* symbolOf(const Node* node);
   SemanticAnalyser();
   bool analyse(const programNode& program);
   bool hasErrors() const;
+  TypeInfo getTypeInfo(const Ident& id);
+  bool validVarType(const TypeInfo& t) const;
   const vector<string>& getErrors() const;
-  void requireBool(const Node* at, SemanticType t, const string& what);
+  Symbol* findMember(const string& cls, const string& memberName);
+  void requireBool(const Node* at, const TypeInfo& t, const string& what);
 };

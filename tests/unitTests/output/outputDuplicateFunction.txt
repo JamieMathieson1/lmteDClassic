@@ -1,13 +1,4 @@
-void a() {
-    printf("1232323232");
-    return;
-}
-void a() {
-    printf("1232323232");
-    return;
-}
-int main() {
-    printf("1232323232");
-    a();
-    return 0;
-}
+--- SEMANTIC ERRORS ---
+Semantic error has occured at 3:5: Undefined function: F_void_printf
+Semantic error has occured at 6:1: Duplicate function definition: a
+Semantic error has occured at 11:5: Undefined function: F_void_printf
