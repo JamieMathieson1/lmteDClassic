@@ -82,6 +82,7 @@ struct Node {
   Node(NodeKind k, int line = 0, int col = 0) : kind(k), line(line), col(col) {}
   Node(NodeKind k, const Token& t)
       : kind(k), line(t.getLine()), col(t.getCharNum()) {}
+  virtual ~Node() = default;
 };
 
 // Template return the node of type.
@@ -115,7 +116,8 @@ struct NameNode : Node {
       initArgs;  // V_Dog_rex(3, 4)  /  A_Dog[3]_dogs(5)  /  beg V_int_x(10)
   bool hasInit = false;  // distinguishes V_int_x() from V_int_x
   bool isDecl = false;
-  bool heapRightAss = false; // if a variable is on the right side of a heap assignment, we only expect V_type after beg
+  bool heapRightAss = false;  // if a variable is on the right side of a heap
+                              // assignment, we only expect V_type after beg
   // Finders and ifno getters.
   NameNode(const Token& t) : Node(KIND, t) {}
   string callVisit(CppGenerator& g) const override;

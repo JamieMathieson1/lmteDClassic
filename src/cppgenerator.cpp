@@ -237,7 +237,7 @@ bool CppGenerator::isHeapName(const NameNode& n) {
 
 string CppGenerator::visit(const NameNode& n) {
   bool heap = isHeapName(n);
-  // if var is on the left side 
+  // if var is on the left side
   if (n.isDecl) {  // heap and the right side with the make shared statement
                    // doesn't
     // use the name and type, so need to only print the type for the heap and
@@ -245,19 +245,18 @@ string CppGenerator::visit(const NameNode& n) {
     string t = heap ? "std::shared_ptr<" + n.id.type + ">" : n.id.type;
     return t + " " + n.id.name + n.id.length;
   }
-  
-  // right assignment of heap, only output its args 
+
+  // right assignment of heap, only output its args
   if (n.heapRightAss) {
     if (!n.hasInit) return "";
     string args;
-    for (const NodePtr& arg : n.initArgs) {
-      args.append(arg.get()->callVisit(*this) + ", ");
+    for (size_t i = 0; i < n.initArgs.size(); ++i) {
+      if (i > 0) args += ", ";
+      args += n.initArgs[i]->callVisit(*this);
     }
-    args.pop_back(); args.pop_back();
     return args;
   }
-
-  // if var in expression 
+  // if var in expression
   return heap ? "*" + n.id.name : n.id.name;
 }
 string CppGenerator::visit(const LiteralNode& n) {

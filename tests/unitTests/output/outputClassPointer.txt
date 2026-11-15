@@ -4,6 +4,6 @@ class Dog {
         int weight;
 };
 int main() {
-    std::shared_ptr<Dog> r = std::make_shared<Dog>(Dog V_Dog);
+    std::shared_ptr<Dog> r = std::make_shared<Dog>();
     return 0;
 }
