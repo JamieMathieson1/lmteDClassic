@@ -115,6 +115,8 @@ struct NameNode : Node {
       initArgs;  // V_Dog_rex(3, 4)  /  A_Dog[3]_dogs(5)  /  beg V_int_x(10)
   bool hasInit = false;  // distinguishes V_int_x() from V_int_x
   bool isDecl = false;
+  bool heapRightAss = false; // if a variable is on the right side of a heap assignment, we only expect V_type after beg
+  // Finders and ifno getters.
   NameNode(const Token& t) : Node(KIND, t) {}
   string callVisit(CppGenerator& g) const override;
 };
