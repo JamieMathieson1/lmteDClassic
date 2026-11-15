@@ -329,10 +329,10 @@ NodePtr Parser::parseUnary() {
                    cur().getContent() == "-");
   if (prefixOp || isK("beg") || isK("donate")) {
     auto node = make_unique<UnaryNode>(cur());
-    position++;
     if (isK("beg")) {
       heapRightAss = true;
     }
+    position++;    
     node->operand = parseUnary();
     if (heapRightAss) heapRightAss = false;
     return node;
@@ -403,12 +403,13 @@ NodePtr Parser::parseCallOrName() {
   name->id = id;
   if (!heapRightAss && !suppressDecl && (id.kind == 'V' || id.kind == 'A'))
     name->isDecl = declare(id.full);
+  name->heapRightAss = this->heapRightAss;
   position++;
 
   // constructor args: V_int_x(10), A_Dog[3]_dogs(5, 6), beg V_Dog_rex(3)
   if ((id.kind == 'V' || id.kind == 'A') && isP("(") && !suppressDecl) {
-    if (!name->isDecl && !heapRightAss)
-      fail("constructor arguments are only allowed on a declaration");
+    if (!heapRightAss)
+      fail("constructor arguments are only allowed on heap assignment");
     name->hasInit = true;
     position++;  // '('
     if (!isP(")")) {

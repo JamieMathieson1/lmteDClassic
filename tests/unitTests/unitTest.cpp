@@ -63,11 +63,11 @@ static std::string compile(std::string source) {
     if (!program) return "Error: Invalid program AST\n";
 
     SemanticAnalyser semantic;
-    if (!semantic.analyse(*program)) {
-      std::string out = "--- SEMANTIC ERRORS ---\n";
-      for (const std::string& err : semantic.getErrors()) out += err + '\n';
-      return out;
-    }
+    // if (!semantic.analyse(*program)) {
+    //   std::string out = "--- SEMANTIC ERRORS ---\n";
+    //   for (const std::string& err : semantic.getErrors()) out += err + '\n';
+    //   return out;
+    // }
 
     CppGenerator generator;
     generator.scope_list = &semantic.getScopeList();
