@@ -142,7 +142,7 @@ string CppGenerator::visit(const AssignNode& n) {
   string valueStr = n.value.get()->callVisit(*this);
   pendingType = saved;
   string op = n.op == "\\=" ? "/=" : n.op;
-  return targetStr + " " + n.op + " " + valueStr;
+  return targetStr + " " + op + " " + valueStr;
 }
 
 // find the index of the array levels that contains this operation

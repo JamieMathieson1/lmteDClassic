@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <string>
 using namespace std;
+
 string toString(int i) {
     if (i == 0) {
         return "0";
@@ -13,7 +14,7 @@ string toString(int i) {
         string digitStr = "";
         digitStr += c;
         res = digitStr + res;
-        i \= 10;
+        i /= 10;
     }
     return res;
 }
@@ -36,7 +37,7 @@ string digitSum(string s, int k) {
                 round = round + total;
             }
         }
-        if (!curr.isEmpty()) {
+        if (!curr.empty()) {
             string total = calcScore(curr);
             round = round + total;
         }
