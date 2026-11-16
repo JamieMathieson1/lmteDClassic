@@ -845,6 +845,7 @@ void SemanticAnalyser::addStringMembers() {
   addMethod("string", "F_bool_contains", SemanticType::BOOL, {S});
   addMethod("string", "F_bool_startsWith", SemanticType::BOOL, {S});
   addMethod("string", "F_bool_endsWith", SemanticType::BOOL, {S});
+  addMethod("string", "F_char_at", SemanticType::CHAR, {I});
 
   // Transformation (all return a new string)
   addMethod("string", "F_string_substr", SemanticType::STRING, {I, I});

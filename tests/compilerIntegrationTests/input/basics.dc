@@ -1,6 +1,8 @@
-FAH Tests: bare member declarations, class-typed variable, setters/getters,
-FAH zero-argument calls, member calls as printf arguments.
-
 F_int_main[void] d
+  V_int_b = 5/
+  V_string_a = {23232}/
+  
+  V_int_a = 5/
+  F_void_printf[{%d}, V_string_a]/
   return 0/
 b

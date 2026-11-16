@@ -14,7 +14,9 @@ void CppGenerator::generate(const programNode& p) {
 }
 
 string CppGenerator::visit(const programNode& p) {
-  string cpp = "#include <memory>\n#include <cstdio>\n#include <string>\nusing namespace std;\n";
+  string cpp =
+      "#include <memory>\n#include <cstdio>\n#include <string>\nusing "
+      "namespace std;\n";
   for (const NodePtr& next : p.items) {
     cpp.append(next.get()->callVisit(*this));
   }
@@ -33,14 +35,14 @@ string CppGenerator::visit(const FunctionNode& n) {
   if (!n.params.empty()) {
     header.pop_back();
     header.pop_back();
-  }  
+  }
   header.push_back(')');
   if (n.isAbstract) return header + " = 0;\n";
   string body = n.body.get()->callVisit(*this);
   return header + body;
 }
 
-// inheritance is always public, call visit on class members. 
+// inheritance is always public, call visit on class members.
 string CppGenerator::visit(const ClassNode& n) {
   string cls = indent() + "class " + n.id.name;
   if (n.bases.size() > 0) {
@@ -101,7 +103,7 @@ string CppGenerator::visit(const IfNode& n) {
   }
   return res;
 }
-// for -> init, step and test + body. 
+// for -> init, step and test + body.
 string CppGenerator::visit(const ForNode& n) {
   string res = indent() + "for (";
   if (n.init) res.append(n.init.get()->callVisit(*this));
@@ -185,6 +187,12 @@ string CppGenerator::visit(const BinaryNode& n) {
 string CppGenerator::visit(const UnaryNode& n) {
   if (n.op == "beg") {
     string t = pendingType.empty() ? "int" : pendingType;
+    // Prefer the constructed type, Base x = beg V_Derived() must build a
+    // derived (speicifcally stops it being base which was an issue)
+    if (n.operand->kind == NodeKind::NAME) {
+      auto* ctor = as<NameNode>(n.operand.get());
+      if (ctor->heapRightAss && !ctor->id.type.empty()) t = ctor->id.type;
+    }
     return "std::make_shared<" + t + ">(" + n.operand.get()->callVisit(*this) +
            ")";
   }
@@ -260,7 +268,7 @@ bool CppGenerator::isHeapName(const NameNode& n) {
 string CppGenerator::visit(const NameNode& n) {
   bool heap = isHeapName(n);
   // if var is on the left side
-  if (n.isDecl) {  
+  if (n.isDecl) {
     string t = heap ? "std::shared_ptr<" + n.id.type + ">" : n.id.type;
     return t + " " + n.id.name + n.id.length;
   }
@@ -288,7 +296,7 @@ string CppGenerator::visit(const LiteralNode& n) {
   return t;
 }
 
-// call visit on array members. 
+// call visit on array members.
 string CppGenerator::visit(const ArrayLiteralNode& n) {
   string res = "{";
   for (size_t i = 0; i < n.elems.size(); ++i) {
