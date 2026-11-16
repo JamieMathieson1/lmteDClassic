@@ -1,20 +1,18 @@
-#include <memory>
 #include <cstdio>
+#include <memory>
 #include <string>
 using namespace std;
 class Base {
-    public: 
-        virtual void run() = 0;
-        virtual void reset() {
-        }
+ public:
+  virtual void run() = 0;
+  virtual void reset() {}
 };
-class Derived :  public Base {
-    public: 
-        void run() {
-        }
+class Derived : public Base {
+ public:
+  void run() {}
 };
 int main() {
-    std::shared_ptr<Base> animal = std::make_shared<Base>();
-    animal->run();
-    return 0;
+  std::shared_ptr<Base> animal = std::make_shared<Base>();
+  animal->run();
+  return 0;
 }

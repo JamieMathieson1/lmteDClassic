@@ -3,6 +3,7 @@ FAH zero-argument calls, member calls as printf arguments.
 
 F_int_main[void] d
   V_string_r = beg V_string({1220})/
+  V_string_a = {3232}/
   F_void_printf[{%d}, V_string_r]/
   return 0/
 b
