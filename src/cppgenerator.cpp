@@ -291,6 +291,9 @@ string CppGenerator::visit(const LiteralNode& n) {
   if (n.litKind == LitKind::STRING) {
     return "\"" + n.text + "\"";
   }
+  if (n.litKind == LitKind::CHAR) {
+    return "'" + n.text + "'";
+  }
   string t = n.text;
   for_each(t.begin(), t.end(), [](char& x) { x = tolower(x); });
   return t;

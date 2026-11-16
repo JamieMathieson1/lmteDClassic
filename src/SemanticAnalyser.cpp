@@ -377,8 +377,10 @@ TypeInfo SemanticAnalyser::checkBinary(const string& op, const TypeInfo& lhs,
     error(node, "Logical operators '&&' and '||' require boolean operands");
     return SemanticType::ERROR;
   }
-  bool lhsNumeric = lhs == SemanticType::INT || lhs == SemanticType::FLOAT;
-  bool rhsNumeric = rhs == SemanticType::INT || rhs == SemanticType::FLOAT;
+  bool lhsNumeric = lhs == SemanticType::INT || lhs == SemanticType::FLOAT ||
+                    lhs == SemanticType::CHAR;
+  bool rhsNumeric = rhs == SemanticType::INT || rhs == SemanticType::FLOAT ||
+                    rhs == SemanticType::CHAR;
 
   // Check the original arithmetic rules
   if (op == "+" || op == "-" || op == "*" || op == "\\" || op == "%" ||
@@ -386,6 +388,14 @@ TypeInfo SemanticAnalyser::checkBinary(const string& op, const TypeInfo& lhs,
     // Check for which type the resulting value should be
     if (!lhsNumeric || !rhsNumeric) {
       error(node, "Invalid arithmetic operands, must require numeric operands");
+      return SemanticType::ERROR;
+    }
+    if (op != "+" && op != "-" && (lhs == SemanticType::CHAR || rhs == SemanticType::CHAR)) {
+      error(node, "Chars only accept + and - arithmetic");
+      return SemanticType::ERROR;
+    }
+    if ((lhs == SemanticType::CHAR || rhs == SemanticType::CHAR) && (lhs == SemanticType::FLOAT || rhs == SemanticType::FLOAT)) {
+      error(node, "Chars only accept arithmetic with integers");
       return SemanticType::ERROR;
     }
     if (op == "%" && (lhs != SemanticType::INT || rhs != SemanticType::INT)) {
@@ -505,6 +515,12 @@ TypeInfo SemanticAnalyser::checkAssignment(const AssignNode* node) {
   if (result == SemanticType::ERROR) return SemanticType::ERROR;
   if (result != SemanticType::UNKNOWN && result.kind != lhs.kind &&
       !(lhs.kind == SemanticType::FLOAT && result == SemanticType::INT)) {
+    error(node, "Compound assignment type mismatch.");
+    return SemanticType::ERROR;
+  }
+  if (result != SemanticType::UNKNOWN && result.kind != lhs.kind &&
+    !(lhs.kind == SemanticType::FLOAT && result == SemanticType::INT) &&
+      !(lhs.kind == SemanticType::CHAR && result == SemanticType::INT)) {
     error(node, "Compound assignment type mismatch.");
     return SemanticType::ERROR;
   }
@@ -765,6 +781,9 @@ bool SemanticAnalyser::assignable(const TypeInfo& to,
   if (to.kind == SemanticType::UNKNOWN || from.kind == SemanticType::UNKNOWN)
     return true;
   if (to.kind == SemanticType::FLOAT && from.kind == SemanticType::INT)
+    return true;
+  if ((to.kind == SemanticType::CHAR && from.kind == SemanticType::INT) ||
+  (to.kind == SemanticType::INT && from.kind == SemanticType::CHAR))
     return true;
   if (to.kind != from.kind) return false;
   if (to.kind == SemanticType::CLASS)

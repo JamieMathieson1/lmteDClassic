@@ -20,6 +20,9 @@ bool Tokenizer::isValidLiteral(string& content) {
   if (content.size() >= 2 && content[0] == '{' && content.back() == '}') {
     return true;
   }
+  // char
+  if (content.size() == 3 && content.front() == '\'' && content.back() == '\'')
+  return true;
   // or a numeric literal : all digits + only one appearance of '.'
   bool dotSeen = false;
   for (char a : content) {
@@ -224,6 +227,12 @@ void Tokenizer::build(string& code) {
       if (content.empty()) {
         if (code[i] == 'A')
           arrM = true;
+        else if (code[i] == '\'' && i + 2 < len && code[i + 2] == '\'') {
+          content = code.substr(i, 3);
+          finalizeToken(content, i + 3);
+          i += 2;
+          continue;
+        }
         else if (code[i] == '{') {
           strM = true;
           content.push_back(

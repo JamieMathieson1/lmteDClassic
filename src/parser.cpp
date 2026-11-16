@@ -465,7 +465,12 @@ NodePtr Parser::parsePrimary() {
     if (c == "True" || c == "False") {
       lit->litKind = LitKind::BOOL;
       lit->text = c;
-    } else if (c[0] == '{') {
+    } 
+    else if (c[0] == '\'') {
+      lit->litKind = LitKind::CHAR;
+      lit->text = c.substr(1, c.size() - 2);
+    } 
+    else if (c[0] == '{') {
       lit->litKind = LitKind::STRING;
       lit->text = c.substr(1, c.size() - 2);
     } else if (c.find('.') != string::npos) {
