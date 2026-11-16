@@ -109,7 +109,7 @@ The currently supported primitive types are:
 | `bool` | Boolean values |
 | `char` | Character values |
 | `string` | String values |
-| `void` | No return value; used for functions |
+| `void` | No return value (used for functions) |
 
 Class types can also be used when declaring variables.
 
@@ -129,7 +129,7 @@ Alternatively, a variable can be declared and assigned a value simultaneously:
 V_int_age = 21/
 V_float_height = 1.85/
 V_bool_active = True/
-V_string_name = {Jamie}/
+V_string_name = {Max}/
 ```
 
 Boolean literals use `True` and `False`.
@@ -437,38 +437,3 @@ The semantic analyser checks that variables passed to `donate` have been heap al
 
 Using a variable after it has been donated is also detected as a semantic error.
 
----
-
-# Building and Running D Classic Programs
-
-## Quick Start
-
-Build the compiler:
-
-```sh
-make
-```
-
-Compile a D Classic source file into C++:
-
-```sh
-./compiler <input_file> <output_file>
-```
-
-For example:
-
-```sh
-./compiler tests/compilerIntegrationTests/input/basics.dc output/generated.cpp
-```
-
-The generated C++ file can then be compiled separately using a C++ compiler.
-
-## Running Tests
-
-Run the complete test suite:
-
-```sh
-make testall
-```
-
-The make targets and fixture workflow are described in the [Testing Guide](testing.md).
