@@ -17,7 +17,28 @@ Return s after all rounds have been completed.
 
 HHAF
 
-F_int_main[void] d 
-    cardio[]
+F_int_main[V_string_s, V_int_k] d 
+    FAHH while s's length is > k, do a round 
+    round: add k or less chars to the current string,  combine the integer values, 
+    append as a string to the round's string, and repeat while loop until the string is > k
+    HHAF
+
+    cardif[V_string_s;F_int_size[] > k] d 
+        V_string_round/
+        V_string_curr/
+        cardio[V_int_i = 0, V_int_i < V_string_s;F_int_size[], V_int_i += 1] d 
+            if [(V_int_i + 1) % k == 0] d 
+                V_string_total = F_string_calcScore[V_string_curr]/
+                V_string_curr = {}/
+                V_string_round = V_string_round + V_string_total/
+            b
+        b
+        if [V_string_curr;F_bool_empty[]] d 
+            V_string_total = F_string_calcScore[V_string_curr]/
+            V_string_round = V_string_round + V_string_total/
+        b
+        V_string_s = V_string_round/        
+    b
+    return V_string_s/
 b
 
