@@ -141,6 +141,7 @@ string CppGenerator::visit(const AssignNode& n) {
   string targetStr = n.target.get()->callVisit(*this);
   string valueStr = n.value.get()->callVisit(*this);
   pendingType = saved;
+  string op = n.op == "\\=" ? "/=" : n.op;
   return targetStr + " " + n.op + " " + valueStr;
 }
 

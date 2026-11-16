@@ -1,8 +1,10 @@
+
 F_int_main[void] d
   V_char_a = 'a'/               FAH define char check
   V_int_comb = 'a' + 'b'/       FAH adding char to get integer value
   V_string_text = {a}/
   V_string_text += V_char_a/    FAH adding char to string creates longer string
   V_char_b = V_char_a + 3/      FAH adding int to a char to make a different char value
+  F_void_printf[{%d%s}, V_int_comb, V_char_b]/
   return 0/
 b
