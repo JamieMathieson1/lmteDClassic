@@ -100,10 +100,7 @@ also accepts fixture names after it has been built, for example:
    make testall
    ```
 
-The `--update` mode is a deliberate approval step, not a test assertion:
-never use it to hide an unexpected compiler change. If a fixture should no
-longer compile, add or update a unit test for the expected parser or semantic
-diagnostic instead of recording generated output.
+The --update mode in the compiler integration tests c++ output generator outputs generated c++ code according to the current state of the source files, it does not generate the correct expected output code (if the source files have a logical bug, which they currently do not).
 
 ## Useful commands
 
