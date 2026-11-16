@@ -218,7 +218,7 @@ Function parameters are enclosed in square brackets and separated by commas.
 
 A function body begins with `d` and ends with `b`.
 
-For example:
+Function example:
 
 ```text
 F_int_add[V_int_a, V_int_b] d

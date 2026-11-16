@@ -1,0 +1,7 @@
+F_int_main[void] d
+    V_string_a = {6}/
+    V_string_b = V_string_a/
+    V_string_c = V_string_b/
+    F_void_printf[{%s}, V_string_c]/
+    return 0/
+b
