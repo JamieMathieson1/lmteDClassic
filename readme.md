@@ -205,7 +205,7 @@ Function parameters are enclosed in square brackets and separated by commas.
 
 A function body begins with `d` and ends with `b`.
 
-For example:
+Function example:
 
 ```text
 F_int_add[V_int_a, V_int_b] d
@@ -273,7 +273,7 @@ b
 
 ### For Loops
 
-For loops use the `condition` keyword.
+For loops use the `cardio` keyword.
 
 The loop declaration contains three expressions separated by commas:
 
@@ -285,7 +285,7 @@ The loop declaration contains three expressions separated by commas:
 F_int_main[void] d
     V_int_sum = 0/
 
-    condition[V_int_i = 0, V_int_i < 5, V_int_i += 1] d
+    cardio[V_int_i = 0, V_int_i < 5, V_int_i += 1] d
         V_int_sum += V_int_i/
     b
 
@@ -297,10 +297,10 @@ The loop executes while its condition remains true.
 
 ### While Loops
 
-While loops use the `tested` keyword.
+While loops use the `cardif` keyword.
 
 ```text
-tested[V_int_counter < 5] d
+cardif[V_int_counter < 5] d
     V_int_counter += 1/
 b
 ```
