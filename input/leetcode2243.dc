@@ -1,5 +1,4 @@
-FAHH
-
+FFAH
 2243. Calculate Digit Sum of a String
 Easy
 Topics
@@ -15,48 +14,59 @@ Replace each group of s with a string representing the sum of all its digits. Fo
 Merge consecutive groups together to form a new string. If the length of the string is greater than k, repeat from step 1.
 Return s after all rounds have been completed.
 
-HHAF
-
-F_string_toString[V_int_i] d 
-    if [V_int_i == 0] d 
+HAFF
+F_string_toString[V_int_i] d
+    if [V_int_i == 0] d
         return {0}/
     b
-    V_string_res/
-    cardif[V_int_i > 0] d 
+    V_string_res = {}/
+    cardif [V_int_i > 0] d
         V_int_dig = V_int_i % 10/
-        V_string_res = V_string_res + 
+        V_char_c = '0' + V_int_dig/
+        V_string_digitStr = {}/
+        V_string_digitStr += V_char_c/
+        V_string_res = V_string_digitStr + V_string_res/
+        V_int_i \= 10/
     b
+    return V_string_res/
 b
 
-F_string_calcScore[V_string_s] d 
+F_string_calcScore[V_string_s] d
     V_int_score = 0/
-    cardio[V_int_i = 0, V_int_i < V_string_s;F_int_size[], V_int_i += 1] d 
-        V_int_score += V_string_s;F_char_at[V_int_i] - {0}/
+    cardio [V_int_i = 0, V_int_i < V_string_s;F_int_length[], V_int_i += 1] d
+        V_int_score += V_string_s;F_char_at[V_int_i] - '0'/
     b
+    return F_string_toString[V_int_score]/
 b
 
-F_int_main[V_string_s, V_int_k] d 
-    FAHH while s's length is > k, do a round 
-    round: add k or less chars to the current string,  combine the integer values, 
-    append as a string to the round's string, and repeat while loop until the string is > k
-    HHAF
+F_string_digitSum[V_string_s, V_int_k] d
+    FFAH while s's length is > k, do a round
+    round: add k or less chars to the current string, combine the integer values,
+    append as a string to the round's string, and repeat while loop until the string is <= k
+    HAFF
 
-    cardif[V_string_s;F_int_size[] > V_int_k] d 
-        V_string_round/
-        V_string_curr/
-        cardio[V_int_i = 0, V_int_i < V_string_s;F_int_size[], V_int_i += 1] d 
-            if [(V_int_i + 1) % V_int_k == 0] d 
+    cardif [V_string_s;F_int_length[] > V_int_k] d
+        V_string_round = {}/
+        V_string_curr = {}/
+        cardio [V_int_i = 0, V_int_i < V_string_s;F_int_length[], V_int_i += 1] d
+            V_string_curr += V_string_s;F_char_at[V_int_i]/
+            if [(V_int_i + 1) % V_int_k == 0] d
                 V_string_total = F_string_calcScore[V_string_curr]/
                 V_string_curr = {}/
                 V_string_round = V_string_round + V_string_total/
             b
         b
-        if [V_string_curr;F_bool_empty[]] d 
+        if [!V_string_curr;F_bool_isEmpty[]] d
             V_string_total = F_string_calcScore[V_string_curr]/
             V_string_round = V_string_round + V_string_total/
         b
-        V_string_s = V_string_round/        
+        V_string_s = V_string_round/
     b
     return V_string_s/
 b
 
+F_int_main[void] d
+    V_string_ans = F_string_digitSum[{11111222223}, 3]/
+    F_void_printf[{%s}, V_string_ans]/
+    return 0/
+b

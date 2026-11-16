@@ -377,6 +377,10 @@ TypeInfo SemanticAnalyser::checkBinary(const string& op, const TypeInfo& lhs,
     error(node, "Logical operators '&&' and '||' require boolean operands");
     return SemanticType::ERROR;
   }
+  if (op == "+" && lhs == SemanticType::STRING &&
+      (rhs == SemanticType::STRING || rhs == SemanticType::CHAR)) {
+    return SemanticType::STRING;
+  }
   bool lhsNumeric = lhs == SemanticType::INT || lhs == SemanticType::FLOAT ||
                     lhs == SemanticType::CHAR;
   bool rhsNumeric = rhs == SemanticType::INT || rhs == SemanticType::FLOAT ||
