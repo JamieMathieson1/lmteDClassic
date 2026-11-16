@@ -14,9 +14,7 @@ The compiler entry point is `src/compiler.cpp`; the reusable pipeline is
 ## Documentation
 
 - [Project layout](layout.md) - source, headers, generated output, and fixtures.
-- [Tokenization and source syntax](tokenization.md) - names, literals, operators,
-  comments, and delimiters.
-- [Compiler stages](compiler_pipeline.md) - parser, semantic analyser,
+- [Compiler stages](compiler_pipeline.md) - tokenization, parser, semantic analyser,
   optimizer, AST nodes, and language-feature implementation map.
 - [Testing guide](testing.md) - unit tests, compiler integration tests, and how to add cases.
 
