@@ -42,7 +42,7 @@ const unordered_set<char> PUNCTUATORS = {
 class Tokenizer {
  private:
   vector<Token> tokens;
-  int curr = 0;
+  size_t curr = 0;
   bool isValidType(const string& t);
   // helper functions
   bool isValidLiteral(string& content);
@@ -72,5 +72,5 @@ class Tokenizer {
     return tokens[curr - 1];
   }
 
-  int getCurrIdx() { return curr; }
+  size_t getCurrIdx() { return curr; }
 };

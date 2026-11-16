@@ -18,8 +18,7 @@ The compiler entry point is `src/compiler.cpp`; the reusable pipeline is
   comments, and delimiters.
 - [Compiler stages](compiler_pipeline.md) - parser, semantic analyser,
   optimizer, AST nodes, and language-feature implementation map.
-- [Testing guide](testing.md) - unit tests, compiler integration tests, and
-  how to add bespoke cases.
+- [Testing guide](testing.md) - unit tests, compiler integration tests, and how to add cases.
 
 ## Quick start
 
@@ -27,6 +26,13 @@ Build the compiler and compile a source file:
 
 ```sh
 make
+```
+
+Then run compiled machine code: 
+
+```sh
+./compiler <input_file> <output_file>
+Example: 
 ./compiler tests/compilerIntegrationTests/input/basics.dc output/generated.cpp
 ```
 
@@ -35,5 +41,3 @@ Run all tests:
 ```sh
 make testall
 ```
-
-The make targets and fixture workflow are described in [Testing guide](testing.md).
