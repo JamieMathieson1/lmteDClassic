@@ -1,9 +1,16 @@
 C_Base d
-    highkey F_void_run[void]/
-    lowkey F_void_reset[void]d
+    highkey F_void_run[]/
+    lowkey F_void_reset[] d
     b
 b
 
-F_int_main[void] d
+C_Derived worships C_Base d
+    F_void_run[] d
+    b
+b
+
+F_int_main[] d
+    V_Base_animal = beg V_Derived()/
+    V_Base_animal;F_void_run[]/
     return 0/
 b

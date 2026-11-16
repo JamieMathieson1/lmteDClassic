@@ -8,6 +8,13 @@ class Base {
         virtual void reset() {
         }
 };
+class Derived :  public Base {
+    public: 
+        void run() {
+        }
+};
 int main() {
+    std::shared_ptr<Base> animal = std::make_shared<Base>();
+    animal->run();
     return 0;
 }
