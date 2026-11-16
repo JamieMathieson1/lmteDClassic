@@ -86,15 +86,15 @@ static programNode programWith(NodePtr statement) {
   return program;
 }
 
-static programNode voidProgramWith(NodePtr statement) {
-  programNode program;
-  auto function = std::make_unique<FunctionNode>(token("F_int_main"));
-  function->id = Ident::decode("F_int_main");
-  function->body = std::make_unique<BlockNode>(token("d"));
-  as<BlockNode>(function->body.get())->stmts.push_back(std::move(statement));
-  program.items.push_back(std::move(function));
-  return program;
-}
+// static programNode voidProgramWith(NodePtr statement) {
+//   programNode program;
+//   auto function = std::make_unique<FunctionNode>(token("F_int_main"));
+//   function->id = Ident::decode("F_int_main");
+//   function->body = std::make_unique<BlockNode>(token("d"));
+//   as<BlockNode>(function->body.get())->stmts.push_back(std::move(statement));
+//   program.items.push_back(std::move(function));
+//   return program;
+// }
 static programNode validProgramWith(NodePtr statement) {
   std::vector<NodePtr> statements;
   statements.push_back(std::move(statement));

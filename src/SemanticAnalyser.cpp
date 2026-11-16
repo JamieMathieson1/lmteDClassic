@@ -858,6 +858,7 @@ void SemanticAnalyser::addMethod(const string& cls, const string& name,
   scope_list.front()[cls + "." + name] = s;
 }
 
+// Add string member functions.
 void SemanticAnalyser::addStringMembers() {
   const TypeInfo S(SemanticType::STRING), I(SemanticType::INT),
       C(SemanticType::CHAR);
