@@ -62,14 +62,14 @@ V_int_x = 10/                      variable; '/' ends a statement
 A_int[3]_nums = (1, 2, 3)/         array literal in ( )
 V_int_s = F_int_add[V_int_x, 4]/   call: args in [ ]
 if[V_int_x >= 10] d ... b          control flow: condition in [ ]
-condition[init, test, step] d ... b
+cardio[init, test, step] d ... b
 ```
 
 ## Token types
 | Type | Matches |
 |---|---|
 | `OPERATOR` | `+ - * ** \ %`, `< <= == > >= !=`, `= += -= *= **= \= %=`, `& \| ^ &= \|= ^= !` |
-| `KEYWORD` | `if elseif catch cardio tested testing return worships beg donate lowkey highkey`, plus the type names |
+| `KEYWORD` | `if elseif catch cardio cardif do return worships beg donate lowkey highkey`, plus the type names |
 | `PUNCTUATOR` | `[ ] ( ) , ; / d b` (`d`/`b` only when they stand alone) |
 | `LITERAL` | numbers (digits, at most one `.`), `True`/`False`, strings `{...}` |
 | `IDENTIFIER` | the name forms above |
@@ -143,7 +143,7 @@ The complete token and name rules are in
 | Classes and inheritance | `C_Dog d ... b`, `C_Dog worships C_Animal d ... b` | `ClassNode` | `parseClass` |
 | Member access | `V_Dog_r;V_int_age` | `MemberNode` | `parsePostfix` |
 | Conditionals | `if[...] d ... b`, `elseif`, `catch` | `IfNode` | `parseIf` |
-| Loops | `cardio[init,test,step]`, `tested[...]`, `testing d ... b tested[...]` | `ForNode`, `WhileNode`, `DoWhileNode` | `parseFor`, `parseWhile`, `parseDoWhile` |
+| Loops | `cardio[init,test,step]`, `cardif[...]`, `do d ... b cardif[...]` | `ForNode`, `WhileNode`, `DoWhileNode` | `parseFor`, `parseWhile`, `parseDoWhile` |
 | Returns | `return expression/` or `return/` | `ReturnNode` | `parseReturn` |
 | Heap operations | `beg` and `donate` | `UnaryNode` | `parseUnary`, semantic heap flag |
 | Operators | arithmetic, comparison, logical, bitwise, assignment | `UnaryNode`, `BinaryNode`, `AssignNode` | `parseUnary`, `parseBinary`, `parseAssign` |
