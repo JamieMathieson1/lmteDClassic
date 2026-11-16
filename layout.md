@@ -7,10 +7,6 @@ The D Classic Compiler is organised into separate directories for source code, h
 ```text
 lmteDClassic/
 │
-├── .vscode/
-│   ├── c_cpp_properties.json
-│   └── launch.json
-│
 ├── header/
 │   ├── Compiler.h
 │   ├── CppGenerator.h
@@ -36,24 +32,7 @@ lmteDClassic/
 ├── output/
 │   └── generated.cpp
 │
-├── tests/
-│   ├── compilerIntegrationTests/
-│   │   ├── input/
-│   │   │   └── *.dc
-│   │   ├── output/
-│   │   │   └── *.cpp
-│   │   └── src/
-│   │       └── compiler_integration_tests.cpp
-│   │
-│   └── unitTests/
-│       ├── output/
-│       ├── codegen_unit_tests.cpp
-│       ├── optimizer_unit_tests.cpp
-│       ├── parser_unit_tests.cpp
-│       ├── semantic_analyser_unit_tests.cpp
-│       ├── tokenizer_unit_tests.cpp
-│       ├── test_framework.h
-│       └── test_runner.cpp
+├── tests/...
 │
 ├── compiler_pipeline.md
 ├── testing.md
@@ -145,35 +124,4 @@ Each input fixture has a corresponding expected C++ file. This allows the integr
 | `readme.md` | Provides the project overview, documentation links, and instructions for building and running the compiler. |
 | `compiler_pipeline.md` | Documents the compiler stages, AST structure, language features, and implementation details. |
 | `testing.md` | Explains the testing structure, available commands, and how to add new tests. |
-| `.vscode/` | Contains Visual Studio Code configuration files for C++ development and debugging. |
 
-## Compilation Flow
-
-The compiler follows a sequential pipeline, with each stage implemented in a separate source file. The `Compiler::run()` function in `src/Compiler.cpp` coordinates the process.
-
-```text
-        D Classic Source (.dc)
-                  |
-                  v
-             Tokenizer
-                  |
-                  v
-               Parser
-                  |
-                  v
-           Abstract Syntax Tree
-                  |
-                  v
-         Semantic Analyser
-                  |
-                  v
-              Optimizer
-                  |
-                  v
-            C++ Generator
-                  |
-                  v
-          Generated C++ (.cpp)
-```
-
-This modular structure separates the responsibilities of each compiler stage, making individual components easier to maintain, test, and extend.
