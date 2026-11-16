@@ -1,0 +1,16 @@
+F_int_main[void] d
+    V_int_count = 0/
+    V_int_total = 0/
+
+    cardif[V_int_count < 3] d
+        V_int_total += V_int_count/
+        V_int_count += 1/
+    b
+
+    do d
+        V_int_total += V_int_count/
+        V_int_count -= 1/
+    b cardif[V_int_count > 0]/
+
+    return V_int_total/
+b
