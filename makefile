@@ -31,8 +31,6 @@ update-compiler-tests:
 	$(CXX) $(CXXFLAGS) tests/compilerIntegrationTests/src/compiler_integration_tests.cpp $(CORE_SRCS) -o /tmp/lmteDClassic-compiler-integration-tests
 	/tmp/lmteDClassic-compiler-integration-tests --update
 
-test: unit-tests
-
 testall: unit-tests compiler-tests
 
 clean:

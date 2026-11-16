@@ -31,6 +31,7 @@ TEST_CASE("code generator emits a function and return") {
   REQUIRE_EQ(generator.getCode(),
              std::string("#include <memory>\n"
                          "#include <cstdio>\n"
+                         "#include <string>\n"
                          "using namespace std;\n"
                          "int main() {\n"
                          "    return 1;\n"

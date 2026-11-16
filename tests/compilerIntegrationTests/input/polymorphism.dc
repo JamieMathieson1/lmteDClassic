@@ -3,3 +3,7 @@ C_Base d
     lowkey F_void_reset[void]d
     b
 b
+
+F_int_main[void] d
+    return 0/
+b

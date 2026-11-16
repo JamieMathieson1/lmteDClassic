@@ -1,5 +1,6 @@
 #include <memory>
 #include <cstdio>
+#include <string>
 using namespace std;
 class Dog {
     public: 

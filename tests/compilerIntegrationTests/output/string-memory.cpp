@@ -1,5 +1,9 @@
+#include <memory>
+#include <cstdio>
+#include <string>
+using namespace std;
 int main() {
     std::shared_ptr<string> r = std::make_shared<string>("abcdefg");
-    print("%s", *r);
+    printf("%s", *r);
     return 0;
 }

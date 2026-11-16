@@ -43,7 +43,7 @@ TEST_CASE("parser builds conditional and loop nodes") {
   NodePtr ast = parseSource(
       "F_int_main[void]d if[True]d return 1/b "
       "cardif[True]d return 2/b "
-      "do cardif d return 3/b cardif[False]/ "
+      "do d return 3/b cardif[False]/ "
       "return 4/b");
   auto* body = as<BlockNode>(as<FunctionNode>(
                                  as<programNode>(ast.get())->items[0].get())
