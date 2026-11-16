@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <string>
 using namespace std;
+
 string toString(int i) {
     if (i == 0) {
         return "0";
@@ -13,14 +14,14 @@ string toString(int i) {
         string digitStr = "";
         digitStr += c;
         res = digitStr + res;
-        i \= 10;
+        i /= 10;
     }
     return res;
 }
 string calcScore(string s) {
     int score = 0;
     for (int i = 0; i < s.length(); i += 1) {
-        score += s.charAt(i) - '0';
+        score += s.at(i) - '0';
     }
     return toString(score);
 }
@@ -29,14 +30,14 @@ string digitSum(string s, int k) {
         string round = "";
         string curr = "";
         for (int i = 0; i < s.length(); i += 1) {
-            curr += s.charAt(i);
+            curr += s.at(i);
             if ((i + 1) % k == 0) {
                 string total = calcScore(curr);
                 curr = "";
                 round = round + total;
             }
         }
-        if (!curr.isEmpty()) {
+        if (!curr.empty()) {
             string total = calcScore(curr);
             round = round + total;
         }
