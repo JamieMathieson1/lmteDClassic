@@ -1,6 +1,5 @@
-#include "test_framework.h"
-
 #include "../../header/SemanticAnalyser.h"
+#include "test_framework.h"
 
 static Token token(const std::string& text) {
   return Token(text, TokenType::LITERAL, 1, 1);
@@ -50,8 +49,7 @@ static NodePtr unary(const std::string& op, NodePtr operand) {
   return node;
 }
 
-static NodePtr call(const std::string& function,
-                    std::vector<NodePtr> args) {
+static NodePtr call(const std::string& function, std::vector<NodePtr> args) {
   auto node = std::make_unique<CallNode>(token(function));
   node->callee = Ident::decode(function);
   node->args = std::move(args);
@@ -90,18 +88,28 @@ static programNode programWith(NodePtr statement) {
 
 static programNode voidProgramWith(NodePtr statement) {
   programNode program;
-  auto function = std::make_unique<FunctionNode>(token("F_void_main"));
-  function->id = Ident::decode("F_void_main");
+  auto function = std::make_unique<FunctionNode>(token("F_int_main"));
+  function->id = Ident::decode("F_int_main");
   function->body = std::make_unique<BlockNode>(token("d"));
   as<BlockNode>(function->body.get())->stmts.push_back(std::move(statement));
   program.items.push_back(std::move(function));
   return program;
 }
+static programNode validProgramWith(NodePtr statement) {
+  std::vector<NodePtr> statements;
+  statements.push_back(std::move(statement));
+  auto ret = std::make_unique<ReturnNode>(token("return"));
+  ret->value = literal("0");
+  statements.push_back(std::move(ret));
 
+  programNode program;
+  program.items.push_back(
+      functionWith("F_int_main", {}, std::move(statements)));
+  return program;
+}
 TEST_CASE("semantic analyser accepts a matching declaration and return") {
   auto body = std::make_unique<BlockNode>(token("d"));
-  body->stmts.push_back(
-      std::make_unique<ExprStmtNode>(token("/")));
+  body->stmts.push_back(std::make_unique<ExprStmtNode>(token("/")));
   auto* statement = as<ExprStmtNode>(body->stmts.back().get());
   statement->expr = assignment(name("V_int_value", true), literal("7"));
   auto ret = std::make_unique<ReturnNode>(token("return"));
@@ -123,8 +131,8 @@ TEST_CASE("semantic analyser rejects incompatible assignment") {
   function->id = Ident::decode("F_int_main");
   auto body = std::make_unique<BlockNode>(token("d"));
   auto expr = std::make_unique<ExprStmtNode>(token("/"));
-  expr->expr = assignment(name("V_int_value", true),
-                          literal("False", LitKind::BOOL));
+  expr->expr =
+      assignment(name("V_int_value", true), literal("False", LitKind::BOOL));
   body->stmts.push_back(std::move(expr));
   function->body = std::move(body);
   program.items.push_back(std::move(function));
@@ -151,12 +159,10 @@ TEST_CASE("semantic analyser rejects non-boolean conditions") {
 }
 
 TEST_CASE("semantic analyser checks arithmetic and logical operand types") {
-  programNode arithmetic =
-      voidProgramWith(expressionStatement(binary("+", literal("1"),
-                                                 literal("2", LitKind::FLOAT))));
+  programNode arithmetic = validProgramWith(expressionStatement(
+      binary("+", literal("1"), literal("2", LitKind::FLOAT))));
   SemanticAnalyser arithmeticAnalyser;
   REQUIRE(arithmeticAnalyser.analyse(arithmetic));
-
   programNode invalidArithmetic = programWith(expressionStatement(
       binary("*", literal("True", LitKind::BOOL), literal("2"))));
   SemanticAnalyser invalidArithmeticAnalyser;
@@ -169,8 +175,8 @@ TEST_CASE("semantic analyser checks arithmetic and logical operand types") {
   SemanticAnalyser invalidModuloAnalyser;
   REQUIRE(!invalidModuloAnalyser.analyse(invalidModulo));
 
-  programNode invalidLogical = programWith(expressionStatement(
-      binary("&&", literal("1"), literal("2"))));
+  programNode invalidLogical = programWith(
+      expressionStatement(binary("&&", literal("1"), literal("2"))));
   SemanticAnalyser invalidLogicalAnalyser;
   REQUIRE(!invalidLogicalAnalyser.analyse(invalidLogical));
   REQUIRE(invalidLogicalAnalyser.getErrors()[0].find("boolean") !=
@@ -178,8 +184,8 @@ TEST_CASE("semantic analyser checks arithmetic and logical operand types") {
 }
 
 TEST_CASE("semantic analyser checks unary operand types") {
-  programNode valid = voidProgramWith(expressionStatement(
-      unary("-", literal("2", LitKind::FLOAT))));
+  programNode valid = validProgramWith(
+      expressionStatement(unary("-", literal("2", LitKind::FLOAT))));
   SemanticAnalyser validAnalyser;
   REQUIRE(validAnalyser.analyse(valid));
 
@@ -187,16 +193,15 @@ TEST_CASE("semantic analyser checks unary operand types") {
       programWith(expressionStatement(unary("!", literal("2"))));
   SemanticAnalyser invalidAnalyser;
   REQUIRE(!invalidAnalyser.analyse(invalid));
-  REQUIRE(invalidAnalyser.getErrors()[0].find("boolean") !=
-          std::string::npos);
+  REQUIRE(invalidAnalyser.getErrors()[0].find("boolean") != std::string::npos);
 }
 
 TEST_CASE("semantic analyser enforces declaration order") {
   auto statements = std::vector<NodePtr>();
-  statements.push_back(expressionStatement(
-      assignment(name("V_int_value"), literal("1"))));
-  statements.push_back(expressionStatement(
-      assignment(name("V_int_value", true), literal("2"))));
+  statements.push_back(
+      expressionStatement(assignment(name("V_int_value"), literal("1"))));
+  statements.push_back(
+      expressionStatement(assignment(name("V_int_value", true), literal("2"))));
   programNode program;
   program.items.push_back(
       functionWith("F_int_main", {}, std::move(statements)));
@@ -248,19 +253,18 @@ TEST_CASE("semantic analyser validates function argument types and arity") {
 }
 
 TEST_CASE("semantic analyser enforces heap allocation and donation rules") {
-  auto heapDeclaration = expressionStatement(assignment(
-      name("V_int_heap", true), unary("beg", literal("1"))));
+  auto heapDeclaration = expressionStatement(
+      assignment(name("V_int_heap", true), unary("beg", literal("1"))));
   auto donateHeap = expressionStatement(unary("donate", name("V_int_heap")));
   auto useAfterDonate = expressionStatement(name("V_int_heap"));
   programNode invalidLifetime;
-  invalidLifetime.items.push_back(functionWith(
-      "F_int_main", {}, [&] {
-        std::vector<NodePtr> statements;
-        statements.push_back(std::move(heapDeclaration));
-        statements.push_back(std::move(donateHeap));
-        statements.push_back(std::move(useAfterDonate));
-        return statements;
-      }()));
+  invalidLifetime.items.push_back(functionWith("F_int_main", {}, [&] {
+    std::vector<NodePtr> statements;
+    statements.push_back(std::move(heapDeclaration));
+    statements.push_back(std::move(donateHeap));
+    statements.push_back(std::move(useAfterDonate));
+    return statements;
+  }()));
   SemanticAnalyser lifetimeAnalyser;
   REQUIRE(!lifetimeAnalyser.analyse(invalidLifetime));
   REQUIRE(lifetimeAnalyser.getErrors()[0].find("Use after donate") !=
@@ -274,4 +278,3 @@ TEST_CASE("semantic analyser enforces heap allocation and donation rules") {
   REQUIRE(allocationAnalyser.getErrors()[0].find("incompatible") !=
           std::string::npos);
 }
-
