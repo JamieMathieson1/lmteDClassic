@@ -28,7 +28,13 @@ TEST_CASE("code generator emits a function and return") {
   program.items.push_back(functionReturning("main", literal("1")));
   CppGenerator generator;
   generator.generate(program);
-  REQUIRE_EQ(generator.getCode(), std::string("int main() {\n    return 1;\n}"));
+  REQUIRE_EQ(generator.getCode(),
+             std::string("#include <memory>\n"
+                         "#include <cstdio>\n"
+                         "using namespace std;\n"
+                         "int main() {\n"
+                         "    return 1;\n"
+                         "}"));
 }
 
 TEST_CASE("code generator emits binary expressions with grouping") {

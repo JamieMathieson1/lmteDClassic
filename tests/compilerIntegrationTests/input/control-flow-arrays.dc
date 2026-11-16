@@ -12,10 +12,10 @@ F_int_main[void] d
   A_int[3]_nums = (1, 2, 3)/
   A_int[3]_nums [0] = 5/
 
-  condition[V_int_i = 0, V_int_i < 3, V_int_i += 1] d
-    V_int_total += A_int[3]_nums [V_int_i]/
+  cardio[V_int_i = 0, V_int_i < 3, V_int_i += 1] d
+  V_int_total += A_int[3]_nums [V_int_i]/
   b
-
+  
   if[V_int_total > 5] d
     V_int_x = 1/
     V_int_total += V_int_x/

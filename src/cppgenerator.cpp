@@ -14,7 +14,7 @@ void CppGenerator::generate(const programNode& p) {
 }
 
 string CppGenerator::visit(const programNode& p) {
-  string cpp;
+  string cpp = "#include <memory>\n#include <cstdio>\n#include<string>\nusing namespace std;\n";
   for (const NodePtr& next : p.items) {
     cpp.append(next.get()->callVisit(*this));
   }

@@ -1,3 +1,6 @@
+#include <memory>
+#include <cstdio>
+using namespace std;
 class Dog {
     public: 
         int age;
@@ -10,8 +13,14 @@ int main() {
     int total = 0;
     int nums[3] = {1, 2, 3};
     nums[0] = 5;
-    for (int i = 0; i < 3; i += 1) {
+ {
+        int i = 0;
         total += nums[i];
+        i += 1;
+        total += nums[i];
+        i += 1;
+        total += nums[i];
+        i += 1;
     }
     if (total > 5) {
         int x = 1;

@@ -42,14 +42,18 @@ TEST_CASE("parser builds conditional and loop nodes") {
   // Confirm the parser preserves statement order for control-flow constructs.
   NodePtr ast = parseSource(
       "F_int_main[void]d if[True]d return 1/b "
-      "tested[True]d return 2/b return 3/b");
+      "cardif[True]d return 2/b "
+      "do cardif d return 3/b cardif[False]/ "
+      "return 4/b");
   auto* body = as<BlockNode>(as<FunctionNode>(
-                                  as<programNode>(ast.get())->items[0].get())
-                                  ->body.get());
-  REQUIRE_EQ(body->stmts.size(), size_t{3});
+                                 as<programNode>(ast.get())->items[0].get())
+                                 ->body.get());
+
+  REQUIRE_EQ(body->stmts.size(), size_t{4});
   REQUIRE(as<IfNode>(body->stmts[0].get()) != nullptr);
   REQUIRE(as<WhileNode>(body->stmts[1].get()) != nullptr);
-  REQUIRE(as<ReturnNode>(body->stmts[2].get()) != nullptr);
+  REQUIRE(as<DoWhileNode>(body->stmts[2].get()) != nullptr);
+  REQUIRE(as<ReturnNode>(body->stmts[3].get()) != nullptr);
 }
 
 TEST_CASE("parser reports malformed blocks") {

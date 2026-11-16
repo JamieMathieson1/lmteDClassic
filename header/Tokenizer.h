@@ -18,7 +18,7 @@ const unordered_set<string> OPERATORS = {
 
 const unordered_set<string> KEYWORDS = {
     // control flow
-    "if", "elseif", "catch", "condition", "tested", "testing", "return",
+    "if", "elseif", "catch", "cardio", "cardif", "do", "return",
     // OOP / memory
     "worships", "beg", "donate",
     // function modifiers

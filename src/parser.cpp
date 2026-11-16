@@ -191,9 +191,9 @@ NodePtr Parser::parseBlock(bool newScope) {
 
 NodePtr Parser::parseStatement() {
   if (isK("if")) return parseIf();
-  if (isK("condition")) return parseFor();
-  if (isK("tested")) return parseWhile();
-  if (isK("testing")) return parseDoWhile();
+  if (isK("cardio")) return parseFor();
+  if (isK("cardif")) return parseWhile();
+  if (isK("do")) return parseDoWhile();
   if (isK("return")) return parseReturn();
   if (isK("elseif") || isK("catch"))
     fail("'" + cur().getContent() + "' without a matching 'if'");
@@ -245,7 +245,7 @@ NodePtr Parser::parseFor() {
   return node;
 }
 
-// tested[cond] d..b
+// cardif[cond] d..b
 NodePtr Parser::parseWhile() {
   auto node = make_unique<WhileNode>(cur());
   position++;
@@ -256,12 +256,12 @@ NodePtr Parser::parseWhile() {
   return node;
 }
 
-// testing d..b tested[cond]/
+// do d..b cardif[cond]/
 NodePtr Parser::parseDoWhile() {
   auto node = make_unique<DoWhileNode>(cur());
-  position++;
+  position++;  // consumes "do"
   node->body = parseBlock();
-  expect(TokenType::KEYWORD, "tested");
+  expect(TokenType::KEYWORD, "cardif");  // trailing condition keyword
   expect(TokenType::PUNCTUATOR, "[");
   node->cond = parseExpr();
   expect(TokenType::PUNCTUATOR, "]");

@@ -1,5 +1,8 @@
+#include <memory>
+#include <cstdio>
+using namespace std;
 int main() {
     std::shared_ptr<string> r = std::make_shared<string>("1220");
-    printf("%d", int r);
+    printf("%d", *r);
     return 0;
 }

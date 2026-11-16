@@ -64,7 +64,7 @@ TEST_CASE("optimizer removes statements after a return") {
 }
 
 TEST_CASE("optimizer unrolls a fixed-count loop") {
-  auto loop = std::make_unique<ForNode>(token("condition"));
+  auto loop = std::make_unique<ForNode>(token("cardio"));
   auto init = std::make_unique<AssignNode>(token("="));
   auto variable = std::make_unique<NameNode>(token("V_int_i"));
   variable->id = Ident::decode("V_int_i");
