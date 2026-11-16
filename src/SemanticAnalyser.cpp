@@ -32,7 +32,8 @@ TypeInfo SemanticAnalyser::getTypeInfo(const Ident& id) {
 }
 
 bool SemanticAnalyser::validVarType(const TypeInfo& t) const {
-  // Variables may not use unresolved or void types, including as array elements.
+  // Variables may not use unresolved or void types, including as array
+  // elements.
   if (t.kind == SemanticType::UNKNOWN || t.kind == SemanticType::VOID)
     return false;
   if (t.kind == SemanticType::ARRAY &&
@@ -300,17 +301,23 @@ TypeInfo SemanticAnalyser::checkExpression(const Node* node) {
       auto* n = as<MemberNode>(node);
       TypeInfo object = checkExpression(n->object.get());
       if (object == SemanticType::ERROR) return SemanticType::ERROR;
-      if (object != SemanticType::CLASS) {
+
+      string cls;
+      if (object.kind == SemanticType::STRING) {
+        cls = "string";
+      } else if (object.kind == SemanticType::CLASS) {
+        cls = object.className;
+      } else {
         error(node, "Member access '.' requires a class object.");
         return SemanticType::ERROR;
       }
+
       const Node* m = n->member.get();
       if (m->kind == NodeKind::CALL) {
         auto* c = as<CallNode>(m);
-        Symbol* f = findMember(object.className, c->callee.full);
+        Symbol* f = findMember(cls, c->callee.full);
         if (!f || !f->isFunction) {
-          error(node, "Class " + object.className + " has no method " +
-                          c->callee.full);
+          error(node, "Class " + cls + " has no method " + c->callee.full);
           for (const auto& a : c->args) checkExpression(a.get());
           return SemanticType::ERROR;
         }
@@ -319,10 +326,9 @@ TypeInfo SemanticAnalyser::checkExpression(const Node* node) {
       }
       if (m->kind == NodeKind::NAME) {
         auto* nm = as<NameNode>(m);
-        Symbol* f = findMember(object.className, nm->id.full);
+        Symbol* f = findMember(cls, nm->id.full);
         if (!f) {
-          error(node,
-                "Class " + object.className + " has no member " + nm->id.full);
+          error(node, "Class " + cls + " has no member " + nm->id.full);
           return SemanticType::ERROR;
         }
         return f->type;
@@ -719,7 +725,8 @@ bool SemanticAnalyser::analyse(const programNode& program) {
   currentReturnType = TypeInfo();
   enterScope();
   addBuiltin("F_string_getline", SemanticType::STRING);
-  addBuiltin("F_void_printf", SemanticType::VOID);
+  addBuiltin("F_void_printf", SemanticType::VOID, true);
+  addStringMembers();
   for (const auto& item : program.items)  // pre-declare top-level functions
     if (item->kind == NodeKind::FUNCTION)
       declare(makeFunctionSymbol(as<FunctionNode>(item.get())));
@@ -736,7 +743,8 @@ bool SemanticAnalyser::analyse(const programNode& program) {
 
 bool SemanticAnalyser::isSubclass(const string& derived,
                                   const string& base) const {
-  // Traverse base classes iteratively and stop when the requested ancestor is found.
+  // Traverse base classes iteratively and stop when the requested ancestor is
+  // found.
   vector<string> stack{derived};
   unordered_set<string> seen;
   while (!stack.empty()) {
@@ -812,4 +820,41 @@ void SemanticAnalyser::addBuiltin(const string& name, SemanticType ret,
   s.variadic = variadic;
   s.type = TypeInfo(ret);
   declare(s);
+}
+
+void SemanticAnalyser::addMethod(const string& cls, const string& name,
+                                 SemanticType ret,
+                                 const vector<TypeInfo>& params) {
+  Symbol s;
+  s.name = name;
+  s.isFunction = true;
+  s.type = TypeInfo(ret);
+  s.params = params;  // excludes the receiver: s.F_int_length[] has 0 params
+  scope_list.front()[cls + "." + name] = s;
+}
+
+void SemanticAnalyser::addStringMembers() {
+  const TypeInfo S(SemanticType::STRING), I(SemanticType::INT),
+      C(SemanticType::CHAR);
+
+  // Inspection
+  addMethod("string", "F_int_length", SemanticType::INT);
+  addMethod("string", "F_bool_isEmpty", SemanticType::BOOL);
+  addMethod("string", "F_char_charAt", SemanticType::CHAR, {I});
+  addMethod("string", "F_int_find", SemanticType::INT, {S});  // -1 if absent
+  addMethod("string", "F_bool_contains", SemanticType::BOOL, {S});
+  addMethod("string", "F_bool_startsWith", SemanticType::BOOL, {S});
+  addMethod("string", "F_bool_endsWith", SemanticType::BOOL, {S});
+
+  // Transformation (all return a new string)
+  addMethod("string", "F_string_substr", SemanticType::STRING, {I, I});
+  addMethod("string", "F_string_concat", SemanticType::STRING, {S});
+  addMethod("string", "F_string_replace", SemanticType::STRING, {S, S});
+  addMethod("string", "F_string_toUpper", SemanticType::STRING);
+  addMethod("string", "F_string_toLower", SemanticType::STRING);
+  addMethod("string", "F_string_trim", SemanticType::STRING);
+
+  // Conversion
+  addMethod("string", "F_int_toInt", SemanticType::INT);
+  addMethod("string", "F_float_toFloat", SemanticType::FLOAT);
 }

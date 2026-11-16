@@ -105,7 +105,9 @@ class SemanticAnalyser {
                        const TypeInfo& rhs, const Node* node);
   // Do a specialised check for assignment expressions
   TypeInfo checkAssignment(const AssignNode* node);
-
+  void addMethod(const string& cls, const string& name, SemanticType ret,
+                 const vector<TypeInfo>& params = {});
+  void addStringMembers();
   // Traverse the AST
   void checkNode(const Node* node);
   TypeInfo currentReturnType;

@@ -4,5 +4,8 @@ C_Dog d
 b
 
 F_int_main[void] d
+  V_string_a = {21434}/
+  V_int_size = V_string_a;F_int_length[]/
+  F_void_printf[{%d}, V_int_size]/
   return 0/
 b
