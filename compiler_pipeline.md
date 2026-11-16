@@ -130,8 +130,6 @@ postfix: [index] and ;member
 
 Parentheses group an expression. A comma-separated parenthesized expression
 is an array literal. `/` terminates statements, and `d`/`b` delimit blocks.
-The complete token and name rules are in
-[`tokenization.md`](tokenization.md).
 
 ## Language feature map
 
