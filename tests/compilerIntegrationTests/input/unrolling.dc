@@ -1,0 +1,6 @@
+F_int_main[void] d
+    cardio[V_int_i = 0, V_int_i < 5, V_int_i = V_int_i + 1]d 
+        F_void_printf[{32323}]/
+    b
+    return 0/
+b
