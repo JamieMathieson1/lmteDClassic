@@ -286,7 +286,7 @@ b
 
 ### For Loops
 
-For loops use the `condition` keyword.
+For loops use the `cardio` keyword.
 
 The loop declaration contains three expressions separated by commas:
 
@@ -298,7 +298,7 @@ The loop declaration contains three expressions separated by commas:
 F_int_main[void] d
     V_int_sum = 0/
 
-    condition[V_int_i = 0, V_int_i < 5, V_int_i += 1] d
+    cardio[V_int_i = 0, V_int_i < 5, V_int_i += 1] d
         V_int_sum += V_int_i/
     b
 
@@ -310,22 +310,22 @@ The loop executes while its condition remains true.
 
 ### While Loops
 
-While loops use the `tested` keyword.
+While loops use the `cardif` keyword.
 
 ```text
-tested[V_int_counter < 5] d
+cardif[V_int_counter < 5] d
     V_int_counter += 1/
 b
 ```
 
 ### Do-While Loops
 
-Do-while loops use the `testing` keyword. The body executes before the condition is checked.
+Do-while loops use the `do` keyword. The body executes before the condition is checked.
 
 ```text
-testing d
+do d
     V_int_counter += 1/
-b tested[V_int_counter < 5]/
+b cardif[V_int_counter < 5]/
 ```
 
 ## 6. Arrays
@@ -358,7 +358,7 @@ F_int_main[void] d
     A_int[3]_numbers = (10, 20, 30)/
     V_int_sum = 0/
 
-    condition[V_int_i = 0, V_int_i < 3, V_int_i += 1] d
+    cardio[V_int_i = 0, V_int_i < 3, V_int_i += 1] d
         V_int_sum += A_int[3]_numbers [V_int_i]/
     b
 
