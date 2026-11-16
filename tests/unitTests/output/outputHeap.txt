@@ -1,2 +1,0 @@
---- SEMANTIC ERRORS ---
-Semantic error has occured at 6:3: Undefined function: F_void_printf

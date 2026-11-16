@@ -67,11 +67,12 @@ class CppGenerator {
   string visit(const LiteralNode& n);
   string visit(const ArrayLiteralNode& n);
 
-  // takes in the AST's program node (top node)
   CppGenerator() {};
 
+  // output the current levels of indentation for formatting purposes.
   string indent() const { return string(level * 4, ' '); }
 
+  // takes in the AST's program node (top node)
   void generate(const programNode& p);
   /// symbol manip;
   const Symbol* lookupSymbol(const string& name);

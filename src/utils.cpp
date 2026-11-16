@@ -12,6 +12,7 @@ const char* Utils::toString(TokenType t) {
     return "UNKNOWN";
 }
 
+// stripping a string
 string Utils::trim(const string& s) {
     const char* ws = " \t\n\r";
     auto start = s.find_first_not_of(ws);

@@ -17,6 +17,7 @@ void SemanticAnalyser::exitScope() {
   }
 }
 TypeInfo SemanticAnalyser::getTypeInfo(const Ident& id) {
+  // Decode array element types separately; other identifiers describe values.
   TypeInfo t;
   if (id.kind == 'A') {
     t.kind = SemanticType::ARRAY;
@@ -31,6 +32,7 @@ TypeInfo SemanticAnalyser::getTypeInfo(const Ident& id) {
 }
 
 bool SemanticAnalyser::validVarType(const TypeInfo& t) const {
+  // Variables may not use unresolved or void types, including as array elements.
   if (t.kind == SemanticType::UNKNOWN || t.kind == SemanticType::VOID)
     return false;
   if (t.kind == SemanticType::ARRAY &&
@@ -334,6 +336,7 @@ TypeInfo SemanticAnalyser::checkExpression(const Node* node) {
   }
 }
 Symbol* SemanticAnalyser::findMember(const string& cls, const string& member) {
+  // Search the class and its bases while avoiding repeated classes in cycles.
   vector<string> stack{cls};
   unordered_set<string> seen;
   auto& global = scope_list.front();
@@ -414,6 +417,7 @@ TypeInfo SemanticAnalyser::checkBinary(const string& op, const TypeInfo& lhs,
 }
 void SemanticAnalyser::requireBool(const Node* at, const TypeInfo& t,
                                    const string& what) {
+  // Preserve earlier errors so this check does not produce cascading messages.
   if (t.kind != SemanticType::BOOL && t.kind != SemanticType::ERROR) {
     error(at, what + " must be boolean.");
   }
@@ -423,6 +427,7 @@ static bool isBegNode(const Node* v) {
 }
 
 TypeInfo SemanticAnalyser::checkAssignment(const AssignNode* node) {
+  // Validate the right side first, then handle declarations and reassignments.
   if (!node->target || !node->value) return SemanticType::ERROR;
   const NameNode* target = node->target->kind == NodeKind::NAME
                                ? as<NameNode>(node->target.get())
@@ -679,6 +684,7 @@ void SemanticAnalyser::checkNode(const Node* node) {
   }
 }
 bool SemanticAnalyser::alwaysReturns(const Node* node) const {
+  // A conditional returns on every path only when it has a returning else path.
   if (!node) return false;
   switch (node->kind) {
     case NodeKind::RETURN:
@@ -702,6 +708,7 @@ bool SemanticAnalyser::alwaysReturns(const Node* node) const {
 // checkNode on program and return the errors if there are any.
 
 bool SemanticAnalyser::analyse(const programNode& program) {
+  // Analysis is reusable, so discard all state from any previous program.
   errors.clear();
   scope_list.clear();
   declaredFunctions.clear();
@@ -721,6 +728,7 @@ bool SemanticAnalyser::analyse(const programNode& program) {
 
 bool SemanticAnalyser::isSubclass(const string& derived,
                                   const string& base) const {
+  // Traverse base classes iteratively and stop when the requested ancestor is found.
   vector<string> stack{derived};
   unordered_set<string> seen;
   while (!stack.empty()) {
@@ -737,6 +745,7 @@ bool SemanticAnalyser::isSubclass(const string& derived,
 
 bool SemanticAnalyser::assignable(const TypeInfo& to,
                                   const TypeInfo& from) const {
+  // Apply the language's implicit conversions and inheritance rules.
   if (to.kind == SemanticType::UNKNOWN || from.kind == SemanticType::UNKNOWN)
     return true;
   if (to.kind == SemanticType::FLOAT && from.kind == SemanticType::INT)
@@ -752,6 +761,7 @@ bool SemanticAnalyser::assignable(const TypeInfo& to,
 }
 
 Symbol SemanticAnalyser::makeFunctionSymbol(const FunctionNode* f) {
+  // Store return and parameter types so calls can be checked later.
   Symbol s;
   s.name = f->id.full;
   s.isFunction = true;
@@ -764,6 +774,7 @@ Symbol SemanticAnalyser::makeFunctionSymbol(const FunctionNode* f) {
 
 bool SemanticAnalyser::checkArgs(const Symbol& f, const vector<NodePtr>& args,
                                  const Node* at) {
+  // Type-check every argument before comparing it with the function signature.
   vector<TypeInfo> types;
   bool ok = true;
   for (const auto& a : args) {

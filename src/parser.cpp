@@ -3,6 +3,7 @@
 #include "../header/Tree.h"
 
 Parser::Parser(Tokenizer& t) {
+  // Buffer tokens so lookahead can inspect the complete input.
   while (t.canPoll()) tokens.push_back(t.poll());
 }
 
@@ -41,6 +42,7 @@ void Parser::fail(string msg) {
 }
 
 bool Parser::declare(const string& fullName) {
+  // Declarations cannot reuse a name from any currently active scope.
   for (auto& s : scopes)
     if (s.count(fullName)) return false;
   scopes.back().insert(fullName);
@@ -48,6 +50,7 @@ bool Parser::declare(const string& fullName) {
 }
 
 size_t Parser::matchingBracket(size_t open) {
+  // Track nested brackets because function and array syntax can be nested.
   int depth = 0;
   for (size_t i = open; i < tokens.size(); i++) {
     if (tokens[i].getType() != TokenType::PUNCTUATOR) continue;
@@ -71,6 +74,7 @@ NodePtr Parser::parse() {
 
 // Helps parse class.
 NodePtr Parser::parseItem() {
+  // Dispatch each top-level or block item to the grammar rule it starts.
   if (isK("lowkey") || isK("highkey"))
     fail("function modifiers are only valid on class member functions");
   if (cur().getType() == TokenType::IDENTIFIER) {
@@ -172,6 +176,7 @@ NodePtr Parser::parseClass() {
 
 // Statements
 NodePtr Parser::parseBlock(bool newScope) {
+  // Some blocks share an existing scope, such as a function body and params.
   auto blk = make_unique<BlockNode>(cur());
   expect(TokenType::PUNCTUATOR, "d");
   if (newScope) pushScope();
@@ -292,6 +297,7 @@ static bool isAssignOp(const string& s) {
 }
 
 NodePtr Parser::parseAssign() {
+  // Recursive parsing of the right side makes assignment right-associative.
   NodePtr lhs = parseBinary(0);
   if (!isDone() && cur().getType() == TokenType::OPERATOR &&
       isAssignOp(cur().getContent())) {
@@ -305,6 +311,7 @@ NodePtr Parser::parseAssign() {
 }
 
 NodePtr Parser::parseBinary(int level) {
+  // Parse tighter precedence levels first, then fold matching operators left.
   if (level >= (int)LEVELS.size()) return parseUnary();
   NodePtr lhs = parseBinary(level + 1);
   while (!isDone() && cur().getType() == TokenType::OPERATOR) {
@@ -323,6 +330,8 @@ NodePtr Parser::parseBinary(int level) {
 }
 
 NodePtr Parser::parseUnary() {
+  // Mark the operand of `beg` so heap-construction arguments are parsed
+  // differently from ordinary variable uses.
   bool prefixOp = !isDone() && cur().getType() == TokenType::OPERATOR &&
                   (cur().getContent() == "!" ||
                    cur().getContent() == "+" ||
@@ -384,6 +393,8 @@ NodePtr Parser::parsePostfix() {
 
 // F_x_y[args]  |  C_X[args] (constructor)  |  plain V_/A_/C_ name
 NodePtr Parser::parseCallOrName() {
+  // A function/class call is distinguished from a variable by its identifier
+  // kind and the following opening bracket.
   const Token& t = cur();
   Ident id = Ident::decode(t.getContent());
   bool bracketNext = position + 1 < tokens.size() &&
@@ -445,6 +456,7 @@ vector<NodePtr> Parser::parseArgs() {
 }
 
 NodePtr Parser::parsePrimary() {
+  // Convert literals, identifiers, and parenthesized expressions into leaves.
   const Token& t = cur();
 
   if (t.getType() == TokenType::LITERAL) {
@@ -513,6 +525,7 @@ bool Parser::isOp(string op) {
 // Same check as isFunction(): F_... [ ... ] d
 // F_... [ ... ] d
 bool Parser::isFunctionDef() {
+  // Confirm the complete signature before treating an identifier as a function.
   if (isDone() || tokens[position].getType() != TokenType::IDENTIFIER)
     return false;
   if (tokens[position].getContent()[0] != 'F') return false;

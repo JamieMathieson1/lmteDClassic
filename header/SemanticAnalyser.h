@@ -24,6 +24,7 @@ enum class SemanticType {
 };
 struct Ident;
 struct TypeInfo {
+  // Arrays use elem, and classes use className; primitive types use only kind.
   SemanticType kind = SemanticType::UNKNOWN;
   string className;
   SemanticType elem = SemanticType::UNKNOWN;
@@ -46,6 +47,7 @@ struct TypeInfo {
   bool operator!=(const TypeInfo& other) const { return !(*this == other); }
 };
 struct Symbol {
+  // A symbol records both its declared type and state used by later checks.
   string name;
   TypeInfo type;
   bool isHeap = false;
@@ -63,6 +65,7 @@ struct FunctionSignature {
 };
 class SemanticAnalyser {
  public:
+  // Expose scopes to code generation after semantic analysis has completed.
   const std::vector<std::unordered_map<std::string, Symbol>>& getScopeList()
       const {
     return scope_list;

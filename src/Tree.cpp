@@ -8,11 +8,6 @@
 
 using namespace std;
 
-// MY NODESSSSSSS FINALLYL.
-// ENUM FOR DIFFERENTIATION, CLASS TO AVOID SILLY BUSIENSSSS>
-
-// Seperate identifiers. kind is the first letter, full is the original text.
-
 // The debugger.
 // Prints an indented tree for checking the Parser's output.
 
@@ -163,6 +158,7 @@ inline void dumpTree(const Node* n, ostream& o = cout, int depth = 0) {
   }
 }
 
+// every node's visit functions implemented 
 inline string LiteralNode::callVisit(CppGenerator& g) const { return g.visit(*this); }
 inline string NameNode::callVisit(CppGenerator& g) const { return g.visit(*this); }
 inline string CallNode::callVisit(CppGenerator& g) const { return g.visit(*this); }

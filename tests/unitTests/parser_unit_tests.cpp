@@ -3,6 +3,7 @@
 #include "../../header/Parser.h"
 
 static NodePtr parseSource(const std::string& source) {
+  // Keep parser tests focused on source text rather than tokenizer setup.
   std::string input = source;
   Tokenizer tokenizer(input);
   Parser parser(tokenizer);
@@ -10,6 +11,7 @@ static NodePtr parseSource(const std::string& source) {
 }
 
 TEST_CASE("parser builds a function with a return statement") {
+  // Verify the basic program, function, block, and return AST hierarchy.
   NodePtr ast = parseSource("F_int_main[void]d return 1/b");
   auto* program = as<programNode>(ast.get());
   REQUIRE(program != nullptr);
@@ -24,6 +26,7 @@ TEST_CASE("parser builds a function with a return statement") {
 }
 
 TEST_CASE("parser respects arithmetic precedence") {
+  // Multiplication must remain nested on the right side of the addition.
   NodePtr ast = parseSource("F_int_main[void]d return 1 + 2 * 3/b");
   auto* function = as<FunctionNode>(as<programNode>(ast.get())->items[0].get());
   auto* expression =
@@ -36,6 +39,7 @@ TEST_CASE("parser respects arithmetic precedence") {
 }
 
 TEST_CASE("parser builds conditional and loop nodes") {
+  // Confirm the parser preserves statement order for control-flow constructs.
   NodePtr ast = parseSource(
       "F_int_main[void]d if[True]d return 1/b "
       "tested[True]d return 2/b return 3/b");
@@ -53,6 +57,7 @@ TEST_CASE("parser reports malformed blocks") {
   try {
     parseSource("F_int_main[void]d return 1/");
   } catch (const parseError&) {
+    // An unterminated statement must be rejected as a parse error.
     threw = true;
   }
   REQUIRE(threw);

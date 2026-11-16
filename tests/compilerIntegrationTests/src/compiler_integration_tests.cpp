@@ -16,6 +16,7 @@ static const fs::path OUT_DIR = "tests/compilerIntegrationTests/output";
 static const fs::path ACTUAL_DIR = "/tmp/lmteDClassic-integration-tests";
 
 static std::string readFile(const fs::path& p) {
+  // Read generated and expected files identically for exact comparisons.
   std::ifstream f(p, std::ios::binary);
   std::stringstream ss;
   ss << f.rdbuf();
@@ -53,6 +54,7 @@ static std::vector<std::string> splitLines(const std::string& s) {
 }
 
 static bool runTest(const fs::path& input, bool update) {
+  // Compile one fixture, then compare or refresh its expected output.
   const std::string name = input.stem().string();
   fs::path actual = ACTUAL_DIR / (name + ".cpp");
   fs::path expected = OUT_DIR / (name + ".cpp");
@@ -104,6 +106,7 @@ static bool runTest(const fs::path& input, bool update) {
 }
 
 static std::vector<fs::path> discoverTests() {
+  // Run fixtures in sorted order so output is deterministic.
   std::vector<fs::path> inputs;
   if (!fs::exists(IN_DIR)) return inputs;
   for (const auto& entry : fs::directory_iterator(IN_DIR)) {
@@ -114,6 +117,7 @@ static std::vector<fs::path> discoverTests() {
 }
 
 int main(int argc, char* argv[]) {
+  // Explicit file names select tests; with no names, discover every fixture.
   bool update = false;
   std::vector<fs::path> inputs;
   for (int i = 1; i < argc; i++) {

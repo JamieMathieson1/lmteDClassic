@@ -3,6 +3,7 @@
 #include "../header/Tree.h"
 #include "../header/Utils.h"
 
+// top level generate function
 void CppGenerator::generate(const programNode& p) {
   heapVars.clear();
   pendingType.clear();
@@ -20,8 +21,7 @@ string CppGenerator::visit(const programNode& p) {
   return cpp;
 }
 
-// top level
-
+// function node has params + body, call visit recursively
 string CppGenerator::visit(const FunctionNode& n) {
   string header = indent();
   if (n.isVirtual || n.isAbstract) header += "virtual ";
@@ -29,16 +29,18 @@ string CppGenerator::visit(const FunctionNode& n) {
   for (const NodePtr& args : n.params) {
     header.append(args.get()->callVisit(*this) + ", ");
   }
+  // remove extra ", "
   if (!n.params.empty()) {
     header.pop_back();
     header.pop_back();
-  }  // remove extra ,
+  }  
   header.push_back(')');
   if (n.isAbstract) return header + " = 0;\n";
   string body = n.body.get()->callVisit(*this);
   return header + body;
 }
-// inheritance is always public
+
+// inheritance is always public, call visit on class members. 
 string CppGenerator::visit(const ClassNode& n) {
   string cls = indent() + "class " + n.id.name;
   if (n.bases.size() > 0) {
@@ -63,7 +65,6 @@ string CppGenerator::visit(const ClassNode& n) {
   return cls;
 }
 
-// statements
 // block has list of statements
 string CppGenerator::visit(const BlockNode& n) {
   string block = " {\n";
@@ -75,6 +76,8 @@ string CppGenerator::visit(const BlockNode& n) {
   block.append(indent() + "}\n");
   return block;
 }
+
+// any expression
 string CppGenerator::visit(const ExprStmtNode& n) {
   return indent() + n.expr.get()->callVisit(*this) + ";\n";
 }
@@ -84,6 +87,7 @@ std::string CppGenerator::visit(const ReturnNode& n) {
   return indent() + "return " + n.value->callVisit(*this) + ";\n";
 }
 
+// if statement has a condition, any number of elseifs, then else block
 string CppGenerator::visit(const IfNode& n) {
   string res = indent() + "if (" + n.cond.get()->callVisit(*this) + ")";
   res.append(n.thenBlock.get()->callVisit(*this));
@@ -97,6 +101,7 @@ string CppGenerator::visit(const IfNode& n) {
   }
   return res;
 }
+// for -> init, step and test + body. 
 string CppGenerator::visit(const ForNode& n) {
   string res = indent() + "for (";
   if (n.init) res.append(n.init.get()->callVisit(*this));
@@ -108,16 +113,19 @@ string CppGenerator::visit(const ForNode& n) {
   res.append(n.body.get()->callVisit(*this));
   return res;
 }
+
+// similar for while and dowhile
 string CppGenerator::visit(const WhileNode& n) {
   return indent() + "while (" + n.cond.get()->callVisit(*this) + ")" +
          n.body.get()->callVisit(*this);
 }
+
 string CppGenerator::visit(const DoWhileNode& n) {
   return indent() + "do" + n.body.get()->callVisit(*this) + indent() +
          "while (" + n.cond.get()->callVisit(*this) + ");\n";
 }
 
-// expressions
+// x = 5 <- assign node, call visit on each side + add heap vars
 string CppGenerator::visit(const AssignNode& n) {
   string saved = pendingType;
   if (n.target->kind == NodeKind::NAME && n.value->kind == NodeKind::UNARY) {
@@ -134,6 +142,7 @@ string CppGenerator::visit(const AssignNode& n) {
   return targetStr + " " + n.op + " " + valueStr;
 }
 
+// find the index of the array levels that contains this operation
 int findLevel(const string& op) {
   int l = 0;
   for (auto& vec : LEVELS) {
@@ -145,6 +154,8 @@ int findLevel(const string& op) {
   return -1;
 }
 
+// wrap an expression in parenthesis if the operation is of lower precedence
+// but still appears deeper in the tree
 string CppGenerator::wrap(const NodeKind& kind, const string& printed,
                           int tightestP, int currLevel) {
   if (kind == NodeKind::UNARY) return printed;
@@ -155,6 +166,7 @@ string CppGenerator::wrap(const NodeKind& kind, const string& printed,
     return printed;
 }
 
+// binary node : expr op expr
 string CppGenerator::visit(const BinaryNode& n) {
   int currLevel = findLevel(n.op);
   int oldTight = tightestP;
@@ -168,6 +180,8 @@ string CppGenerator::visit(const BinaryNode& n) {
   tightestP = oldTight;
   return node;
 }
+
+// op expr
 string CppGenerator::visit(const UnaryNode& n) {
   if (n.op == "beg") {
     string t = pendingType.empty() ? "int" : pendingType;
@@ -182,6 +196,8 @@ string CppGenerator::visit(const UnaryNode& n) {
   }
   return n.op + n.operand.get()->callVisit(*this);
 }
+
+// calling a function / class with args
 string CppGenerator::visit(const CallNode& n) {
   string res = n.callee.name + "(";
   for (size_t i = 0; i < n.args.size(); ++i) {
@@ -191,10 +207,14 @@ string CppGenerator::visit(const CallNode& n) {
   res.append(")");
   return res;
 }
+
+// indexing an array
 string CppGenerator::visit(const IndexNode& n) {
   return n.base.get()->callVisit(*this) + '[' +
          n.index.get()->callVisit(*this) + ']';
 }
+
+// lookup helper
 const Symbol* CppGenerator::lookupSymbol(const string& name) {
   if (!scope_list) return nullptr;
   for (auto it = scope_list->rbegin(); it != scope_list->rend(); ++it) {
@@ -206,6 +226,7 @@ const Symbol* CppGenerator::lookupSymbol(const string& name) {
   return nullptr;
 }
 
+// calling a member of a class
 string CppGenerator::visit(const MemberNode& n) {
   string objectStr;
   string memberStr = n.member.get()->callVisit(*this);
@@ -229,6 +250,7 @@ string CppGenerator::visit(const MemberNode& n) {
   return objectStr + (isHeapVar ? "->" : ".") + memberStr;
 }
 
+// determine whether a var is a heap allocated (for dereferencing purposes)
 bool CppGenerator::isHeapName(const NameNode& n) {
   if (heapVars.count(n.id.full)) return true;
   const Symbol* sym = lookupSymbol(n.id.full);
@@ -238,10 +260,7 @@ bool CppGenerator::isHeapName(const NameNode& n) {
 string CppGenerator::visit(const NameNode& n) {
   bool heap = isHeapName(n);
   // if var is on the left side
-  if (n.isDecl) {  // heap and the right side with the make shared statement
-                   // doesn't
-    // use the name and type, so need to only print the type for the heap and
-    // right side of assign
+  if (n.isDecl) {  
     string t = heap ? "std::shared_ptr<" + n.id.type + ">" : n.id.type;
     return t + " " + n.id.name + n.id.length;
   }
@@ -259,6 +278,7 @@ string CppGenerator::visit(const NameNode& n) {
   // if var in expression
   return heap ? "*" + n.id.name : n.id.name;
 }
+
 string CppGenerator::visit(const LiteralNode& n) {
   if (n.litKind == LitKind::STRING) {
     return "\"" + n.text + "\"";
@@ -268,6 +288,7 @@ string CppGenerator::visit(const LiteralNode& n) {
   return t;
 }
 
+// call visit on array members. 
 string CppGenerator::visit(const ArrayLiteralNode& n) {
   string res = "{";
   for (size_t i = 0; i < n.elems.size(); ++i) {

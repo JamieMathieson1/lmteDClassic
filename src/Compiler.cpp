@@ -16,6 +16,7 @@
 namespace {
 
 std::string readFile(const std::string& path) {
+    // Load the source as one string so tokenization sees the original input.
     std::ifstream input(path);
     if (!input) {
         throw std::runtime_error("Could not open input file: " + path);
@@ -27,6 +28,7 @@ std::string readFile(const std::string& path) {
 }
 
 void writeFile(const std::string& path, const std::string& contents) {
+    // Create the destination directory before writing generated code.
     const std::filesystem::path outputPath(path);
     if (outputPath.has_parent_path()) {
         std::filesystem::create_directories(outputPath.parent_path());
@@ -46,6 +48,8 @@ void writeFile(const std::string& path, const std::string& contents) {
 }
 
 int Compiler::run(const std::string& inputPath, const std::string& outputPath) {
+    // Run the compiler stages in source order: tokenize, parse, analyse,
+    // optimize, generate, and persist the resulting C++ code.
     std::string source = readFile(inputPath);
     Tokenizer tokenizer(source);
     Parser parsed(tokenizer);

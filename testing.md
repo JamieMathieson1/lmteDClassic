@@ -74,7 +74,7 @@ also accepts fixture names after it has been built, for example:
 /tmp/lmteDClassic-compiler-integration-tests basics.dc
 ```
 
-## Adding a bespoke compiler test
+## Adding a compiler test
 
 1. Add a source program such as
    [`tests/compilerIntegrationTests/input/basics.dc`](tests/compilerIntegrationTests/input/basics.dc).

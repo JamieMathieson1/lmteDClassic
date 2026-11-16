@@ -2,6 +2,7 @@
 
 #include "../../header/CppGenerator.h"
 
+// helper functions to create mock objects
 static Token token(const std::string& text) {
   return Token(text, TokenType::LITERAL, 1, 1);
 }
