@@ -121,6 +121,7 @@ A variable can be declared without an initial value:
 V_int_age/
 V_float_height/
 V_bool_active/
+V_string_name/
 ```
 
 Alternatively, a variable can be declared and assigned a value simultaneously:
@@ -129,8 +130,20 @@ Alternatively, a variable can be declared and assigned a value simultaneously:
 V_int_age = 21/
 V_float_height = 1.85/
 V_bool_active = True/
+```
+
+For sting type, the value has to be declared within braces `{}`:
+
+```text
 V_string_name = {Max}/
 ```
+
+For char type, the value has the be declared within sigle qutation marks `''`:
+
+```text
+V_char_grade = 'A'/
+```
+
 
 Boolean literals use `True` and `False`.
 
