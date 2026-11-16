@@ -108,9 +108,11 @@ diagnostic instead of recording generated output.
 ## Useful commands
 
 ```sh
-make                 # build ./compiler
-make test             # unit-tests (the default test target)
-make testall          # unit-tests, then compiler-tests
-make clean            # remove compiler and legacy test binaries
-make clean-output    # remove legacy output*.txt files
+make                      # build ./compiler (same as make compiler)
+make unit-tests           # build and run the unit tests
+make compiler-tests       # build and run the integration fixtures
+make update-compiler-tests  # regenerate expected output for ALL fixtures
+make testall              # unit-tests, then compiler-tests
+make clean                # remove compiler and legacy test binaries
+make clean-output         # remove legacy output*.txt files
 ```

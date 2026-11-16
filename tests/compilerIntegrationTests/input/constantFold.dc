@@ -1,0 +1,5 @@
+F_int_main[void] d
+    V_int_a = 5 + 5 + 5/
+    F_void_printf[{%d}, V_int_a]/
+    return 0/
+b
