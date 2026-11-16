@@ -48,6 +48,8 @@ struct TypeInfo {
 };
 struct Symbol {
   // A symbol records both its declared type and state used by later checks.
+  bool variadic = false;
+
   string name;
   TypeInfo type;
   bool isHeap = false;
@@ -132,4 +134,5 @@ class SemanticAnalyser {
   const vector<string>& getErrors() const;
   Symbol* findMember(const string& cls, const string& memberName);
   void requireBool(const Node* at, const TypeInfo& t, const string& what);
+  void addBuiltin(const string& name, SemanticType ret, bool variadic = true);
 };

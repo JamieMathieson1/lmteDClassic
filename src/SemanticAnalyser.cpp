@@ -718,10 +718,18 @@ bool SemanticAnalyser::analyse(const programNode& program) {
   inFunction = false;
   currentReturnType = TypeInfo();
   enterScope();
+  addBuiltin("F_string_getline", SemanticType::STRING);
+  addBuiltin("F_void_printf", SemanticType::VOID);
   for (const auto& item : program.items)  // pre-declare top-level functions
     if (item->kind == NodeKind::FUNCTION)
       declare(makeFunctionSymbol(as<FunctionNode>(item.get())));
   checkNode(&program);
+  Symbol* mainFn = lookup("F_int_main");
+  if (!mainFn || !mainFn->isFunction) {
+    error(&program, "Program has no entry point: F_int_main is not defined");
+  } else if (!mainFn->params.empty()) {
+    error(&program, "F_int_main must take no parameters");
+  }
   exitScope();
   return !hasErrors();
 }
@@ -782,6 +790,7 @@ bool SemanticAnalyser::checkArgs(const Symbol& f, const vector<NodePtr>& args,
     if (types.back() == SemanticType::ERROR) ok = false;
   }
   if (!ok) return false;
+  if (f.variadic) return true;
   if (types.size() != f.params.size()) {
     error(at, f.name + " expects " + to_string(f.params.size()) +
                   " argument(s), got " + to_string(types.size()));
@@ -794,4 +803,13 @@ bool SemanticAnalyser::checkArgs(const Symbol& f, const vector<NodePtr>& args,
       ok = false;
     }
   return ok;
+}
+void SemanticAnalyser::addBuiltin(const string& name, SemanticType ret,
+                                  bool variadic) {
+  Symbol s;
+  s.name = name;
+  s.isFunction = true;
+  s.variadic = variadic;
+  s.type = TypeInfo(ret);
+  declare(s);
 }

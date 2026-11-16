@@ -1,0 +1,2 @@
+--- SEMANTIC ERRORS ---
+Semantic error has occured at 6:1: Duplicate function definition: a
