@@ -390,11 +390,13 @@ TypeInfo SemanticAnalyser::checkBinary(const string& op, const TypeInfo& lhs,
       error(node, "Invalid arithmetic operands, must require numeric operands");
       return SemanticType::ERROR;
     }
-    if (op != "+" && op != "-" && (lhs == SemanticType::CHAR || rhs == SemanticType::CHAR)) {
+    if (op != "+" && op != "-" &&
+        (lhs == SemanticType::CHAR || rhs == SemanticType::CHAR)) {
       error(node, "Chars only accept + and - arithmetic");
       return SemanticType::ERROR;
     }
-    if ((lhs == SemanticType::CHAR || rhs == SemanticType::CHAR) && (lhs == SemanticType::FLOAT || rhs == SemanticType::FLOAT)) {
+    if ((lhs == SemanticType::CHAR || rhs == SemanticType::CHAR) &&
+        (lhs == SemanticType::FLOAT || rhs == SemanticType::FLOAT)) {
       error(node, "Chars only accept arithmetic with integers");
       return SemanticType::ERROR;
     }
@@ -519,7 +521,7 @@ TypeInfo SemanticAnalyser::checkAssignment(const AssignNode* node) {
     return SemanticType::ERROR;
   }
   if (result != SemanticType::UNKNOWN && result.kind != lhs.kind &&
-    !(lhs.kind == SemanticType::FLOAT && result == SemanticType::INT) &&
+      !(lhs.kind == SemanticType::FLOAT && result == SemanticType::INT) &&
       !(lhs.kind == SemanticType::CHAR && result == SemanticType::INT)) {
     error(node, "Compound assignment type mismatch.");
     return SemanticType::ERROR;
@@ -783,7 +785,7 @@ bool SemanticAnalyser::assignable(const TypeInfo& to,
   if (to.kind == SemanticType::FLOAT && from.kind == SemanticType::INT)
     return true;
   if ((to.kind == SemanticType::CHAR && from.kind == SemanticType::INT) ||
-  (to.kind == SemanticType::INT && from.kind == SemanticType::CHAR))
+      (to.kind == SemanticType::INT && from.kind == SemanticType::CHAR))
     return true;
   if (to.kind != from.kind) return false;
   if (to.kind == SemanticType::CLASS)
@@ -855,26 +857,19 @@ void SemanticAnalyser::addMethod(const string& cls, const string& name,
 void SemanticAnalyser::addStringMembers() {
   const TypeInfo S(SemanticType::STRING), I(SemanticType::INT),
       C(SemanticType::CHAR);
-
-  // Inspection
   addMethod("string", "F_int_length", SemanticType::INT);
-  addMethod("string", "F_bool_isEmpty", SemanticType::BOOL);
-  addMethod("string", "F_char_charAt", SemanticType::CHAR, {I});
-  addMethod("string", "F_int_find", SemanticType::INT, {S});  // -1 if absent
-  addMethod("string", "F_bool_contains", SemanticType::BOOL, {S});
-  addMethod("string", "F_bool_startsWith", SemanticType::BOOL, {S});
-  addMethod("string", "F_bool_endsWith", SemanticType::BOOL, {S});
+  addMethod("string", "F_bool_empty", SemanticType::BOOL);
   addMethod("string", "F_char_at", SemanticType::CHAR, {I});
-
-  // Transformation (all return a new string)
   addMethod("string", "F_string_substr", SemanticType::STRING, {I, I});
-  addMethod("string", "F_string_concat", SemanticType::STRING, {S});
-  addMethod("string", "F_string_replace", SemanticType::STRING, {S, S});
-  addMethod("string", "F_string_toUpper", SemanticType::STRING);
-  addMethod("string", "F_string_toLower", SemanticType::STRING);
-  addMethod("string", "F_string_trim", SemanticType::STRING);
+  addMethod("string", "F_int_find", SemanticType::INT, {S});
+  addMethod("string", "F_int_rfind", SemanticType::INT, {S});
+  addMethod("string", "F_int_compare", SemanticType::INT, {S});
 
-  // Conversion
-  addMethod("string", "F_int_toInt", SemanticType::INT);
-  addMethod("string", "F_float_toFloat", SemanticType::FLOAT);
+  addMethod("string", "F_void_append", SemanticType::VOID, {S});
+  addMethod("string", "F_void_push_back", SemanticType::VOID, {C});
+  addMethod("string", "F_void_pop_back", SemanticType::VOID);
+  addMethod("string", "F_void_clear", SemanticType::VOID);
+  addMethod("string", "F_void_insert", SemanticType::VOID, {I, S});
+  addMethod("string", "F_void_erase", SemanticType::VOID, {I, I});
+  addMethod("string", "F_void_replace", SemanticType::VOID, {I, I, S});
 }
