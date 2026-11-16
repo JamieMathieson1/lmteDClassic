@@ -69,7 +69,7 @@ condition[init, test, step] d ... b
 | Type | Matches |
 |---|---|
 | `OPERATOR` | `+ - * ** \ %`, `< <= == > >= !=`, `= += -= *= **= \= %=`, `& \| ^ &= \|= ^= !` |
-| `KEYWORD` | `if elseif catch condition tested testing return worships beg donate lowkey highkey`, plus the type names |
+| `KEYWORD` | `if elseif catch cardio tested testing return worships beg donate lowkey highkey`, plus the type names |
 | `PUNCTUATOR` | `[ ] ( ) , ; / d b` (`d`/`b` only when they stand alone) |
 | `LITERAL` | numbers (digits, at most one `.`), `True`/`False`, strings `{...}` |
 | `IDENTIFIER` | the name forms above |
@@ -97,7 +97,7 @@ One pass over the characters, building `content` until the token ends, then `fin
 All modes reset after each token.
 
 
-## Parser
+# Parser
 
 The parser is implemented by [`Parser`](header/Parser.h) and
 [`src/parser.cpp`](src/parser.cpp). Its constructor drains the tokenizer into
@@ -105,7 +105,7 @@ a token vector. `parse()` creates a `programNode`, maintains a stack of
 declaration scopes, and parses top-level functions, classes, or statements.
 Errors are reported as `parseError` with a source line and column.
 
-### AST shape
+## AST shape
 
 AST nodes are defined in [`header/Tree.h`](header/Tree.h). The root is a
 `programNode` whose `items` contain declarations or statements. Expressions
@@ -133,7 +133,7 @@ is an array literal. `/` terminates statements, and `d`/`b` delimit blocks.
 The complete token and name rules are in
 [`tokenization.md`](tokenization.md).
 
-### Language feature map
+## Language feature map
 
 | D Classic feature | Source form | AST representation | Main implementation |
 | --- | --- | --- | --- |
@@ -143,7 +143,7 @@ The complete token and name rules are in
 | Classes and inheritance | `C_Dog d ... b`, `C_Dog worships C_Animal d ... b` | `ClassNode` | `parseClass` |
 | Member access | `V_Dog_r;V_int_age` | `MemberNode` | `parsePostfix` |
 | Conditionals | `if[...] d ... b`, `elseif`, `catch` | `IfNode` | `parseIf` |
-| Loops | `condition[init,test,step]`, `tested[...]`, `testing d ... b tested[...]` | `ForNode`, `WhileNode`, `DoWhileNode` | `parseFor`, `parseWhile`, `parseDoWhile` |
+| Loops | `cardio[init,test,step]`, `tested[...]`, `testing d ... b tested[...]` | `ForNode`, `WhileNode`, `DoWhileNode` | `parseFor`, `parseWhile`, `parseDoWhile` |
 | Returns | `return expression/` or `return/` | `ReturnNode` | `parseReturn` |
 | Heap operations | `beg` and `donate` | `UnaryNode` | `parseUnary`, semantic heap flag |
 | Operators | arithmetic, comparison, logical, bitwise, assignment | `UnaryNode`, `BinaryNode`, `AssignNode` | `parseUnary`, `parseBinary`, `parseAssign` |
@@ -153,7 +153,7 @@ The complete token and name rules are in
 the language's prefixed names (`V_`, `A_`, `F_`, and `C_`) to the identifier
 kind, type, name, and array dimensions.
 
-## Semantic analyser
+# Semantic analyser
 
 [`SemanticAnalyser`](header/SemanticAnalyser.h) traverses the AST in
 [`src/SemanticAnalyser.cpp`](src/SemanticAnalyser.cpp). `analyse()` resets
@@ -180,7 +180,7 @@ some memory expressions can resolve to `UNKNOWN`, allowing later analysis
 until richer class/array symbol information is available. `UNKNOWN` is not
 silently treated as an error; invalid and incompatible known types are.
 
-## Optimizer
+# Optimizer
 
 [`Optimizer::optimize`](header/Optimizer.h) in
 [`src/optimizer.cpp`](src/optimizer.cpp) runs these passes:
