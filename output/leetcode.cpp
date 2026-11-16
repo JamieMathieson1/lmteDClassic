@@ -20,7 +20,7 @@ string toString(int i) {
 string calcScore(string s) {
     int score = 0;
     for (int i = 0; i < s.length(); i += 1) {
-        score += s.charAt(i) - '0';
+        score += s.at(i) - '0';
     }
     return toString(score);
 }
@@ -29,7 +29,7 @@ string digitSum(string s, int k) {
         string round = "";
         string curr = "";
         for (int i = 0; i < s.length(); i += 1) {
-            curr += s.charAt(i);
+            curr += s.at(i);
             if ((i + 1) % k == 0) {
                 string total = calcScore(curr);
                 curr = "";

@@ -56,7 +56,7 @@ F_string_digitSum[V_string_s, V_int_k] d
                 V_string_round = V_string_round + V_string_total/
             b
         b
-        if [!V_string_curr;F_bool_isEmpty[]] d
+        if [!V_string_curr;F_bool_empty[]] d
             V_string_total = F_string_calcScore[V_string_curr]/
             V_string_round = V_string_round + V_string_total/
         b

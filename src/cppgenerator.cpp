@@ -177,7 +177,7 @@ string CppGenerator::visit(const BinaryNode& n) {
 
   string lhsStr = n.lhs.get()->callVisit(*this);
   string rhsStr = n.rhs.get()->callVisit(*this);
-  string op = n.op == "\\" ? "/" : n.op;
+  string op = n.op == "\\" ? "/" : (n.op == "\\=" ? "/=" : n.op);
   string node = lhsStr + " " + op + " " + rhsStr;
   node = move(wrap(n.kind, node, oldTight, currLevel));
   tightestP = oldTight;
